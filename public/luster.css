@@ -1,0 +1,313 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+
+/* ═══════════════════════════════════════════════════════════════
+   THEMING — Consumer override API
+   ───────────────────────────────────────────────────────────────
+   Minimal brand override (works in any project):
+
+     :root {
+       --dc-primary:     #f97316;   ← your brand color
+       --dc-primary-dim: #ea580c;   ← darker shade (hover/gradient)
+       --dc-on-primary:  #ffffff;   ← text/icon on primary bg
+     }
+
+   All hover tints, focus rings, shadows, glass effects and
+   gradients cascade automatically via color-mix().
+
+   To switch between dark/light:
+     document.documentElement.setAttribute('data-theme', 'light');
+     document.documentElement.setAttribute('data-theme', 'dark');
+   Or let the browser honor prefers-color-scheme automatically.
+═══════════════════════════════════════════════════════════════ */
+
+/* ─── DARK MODE (default) ─────────────────────────────────────── */
+:root {
+  color-scheme: dark;
+
+  /* ── Surfaces ─────────────────────────────────────────────── */
+  --dc-surface:                   #060e20;
+  --dc-surface-container-lowest:  #030914;
+  --dc-surface-container-low:     #091328;
+  --dc-surface-container:         #0d1a35;
+  --dc-surface-container-high:    #141f38;
+  --dc-surface-container-highest: #192540;
+  --dc-surface-bright:            #1e2e4a;
+
+  /* ── Primary brand (OVERRIDE THESE TO REBRAND) ───────────── */
+  --dc-primary:           #a3a6ff;
+  --dc-primary-dim:       #6063ee;
+  --dc-primary-fixed:     #cfd0ff;
+  --dc-on-primary:        #0a0040;
+  --dc-primary-container: #2b2dad;
+
+  /* ── On-surface ───────────────────────────────────────────── */
+  --dc-on-surface:         #dee5ff;
+  --dc-on-surface-variant: #a3aac4;
+
+  /* ── Outline / border source ─────────────────────────────── */
+  --dc-outline:         #616984;
+  --dc-outline-variant: #40485d;
+  /* Semantic alias used by all border tokens below.
+     Dark mode → use outline-variant (muted).
+     Light mode → use outline (more visible on bright surfaces). */
+  --dc-border-source:   #40485d;
+
+  /* ── Error ────────────────────────────────────────────────── */
+  --dc-error:              #ffb4ab;
+  --dc-error-container:    #93000a;
+  --dc-on-error-container: #ffdad6;
+
+  /* ── Secondary / tertiary ─────────────────────────────────── */
+  --dc-secondary:           #b6aee4;
+  --dc-secondary-container: #353065;
+  --dc-tertiary:            #e8b4c8;
+
+  /* ── Semantic ─────────────────────────────────────────────── */
+  --dc-success:           #4cceac;
+  --dc-success-container: #1a3d35;
+  --dc-warning:           #ffd166;
+  --dc-warning-container: #3d3000;
+
+  /* ── Typography ───────────────────────────────────────────── */
+  --dc-font-display: 'Manrope', sans-serif;
+  --dc-font-body:    'Inter', sans-serif;
+
+  --dc-display-lg: clamp(2.5rem, 5vw, 4.5rem);
+  --dc-display-md: clamp(2rem, 4vw, 3rem);
+  --dc-display-sm: clamp(1.5rem, 3vw, 2.25rem);
+
+  --dc-headline-lg: 2rem;
+  --dc-headline-md: 1.75rem;
+  --dc-headline-sm: 1.375rem;
+
+  --dc-title-lg: 1.25rem;
+  --dc-title-md: 1rem;
+  --dc-title-sm: 0.875rem;
+
+  --dc-body-lg: 1rem;
+  --dc-body-md: 0.875rem;
+  --dc-body-sm: 0.75rem;
+
+  --dc-label-lg: 0.875rem;
+  --dc-label-md: 0.75rem;
+  --dc-label-sm: 0.6875rem;
+
+  --dc-tracking-tight:  -0.02em;
+  --dc-tracking-normal:  0em;
+  --dc-tracking-wide:    0.08em;
+  --dc-tracking-wider:   0.12em;
+
+  /* ── Spacing (4px base) ───────────────────────────────────── */
+  --dc-space-1:  0.25rem;
+  --dc-space-2:  0.5rem;
+  --dc-space-3:  0.75rem;
+  --dc-space-4:  1rem;
+  --dc-space-5:  1.25rem;
+  --dc-space-6:  1.5rem;
+  --dc-space-8:  2rem;
+  --dc-space-10: 2.5rem;
+  --dc-space-12: 3rem;
+  --dc-space-16: 4rem;
+  --dc-space-20: 5rem;
+  --dc-space-24: 6rem;
+
+  /* ── Radius ───────────────────────────────────────────────── */
+  --dc-round-1:    0.25rem;
+  --dc-round-2:    0.5rem;
+  --dc-round-3:    0.75rem;
+  --dc-round-4:    1rem;
+  --dc-round-5:    1.5rem;
+  --dc-round-full: 9999px;
+
+  /* ── Transitions ──────────────────────────────────────────── */
+  --dc-transition-fast: 150ms ease;
+  --dc-transition-base: 250ms ease;
+  --dc-transition-slow: 400ms ease;
+
+  /* ════════════════════════════════════════════════════════════
+     DERIVED TOKENS — computed from base tokens via color-mix().
+     These never need to be overridden manually; they update
+     automatically when you change --dc-primary, --dc-error,
+     --dc-surface, or --dc-border-source.
+  ════════════════════════════════════════════════════════════ */
+
+  /* Shadows */
+  --dc-shadow-sm: 0 4px 24px 0 color-mix(in srgb, var(--dc-primary-dim)  8%, transparent);
+  --dc-shadow-md: 0 8px 40px 0 color-mix(in srgb, var(--dc-primary-dim) 12%, transparent);
+  --dc-shadow-lg: 0 16px 60px 0 color-mix(in srgb, var(--dc-primary-dim) 16%, transparent);
+  --dc-shadow-xl: 0 24px 80px 0 color-mix(in srgb, var(--dc-primary-dim) 22%, transparent);
+
+  /* Hover tints (primary-based) */
+  --dc-hover-tint:        color-mix(in srgb, var(--dc-primary)  4%, transparent);
+  --dc-hover-tint-md:     color-mix(in srgb, var(--dc-primary)  6%, transparent);
+  --dc-hover-tint-strong: color-mix(in srgb, var(--dc-primary)  8%, transparent);
+  --dc-icon-bg:           color-mix(in srgb, var(--dc-primary) 10%, transparent);
+
+  /* Hover tints (neutral/icon buttons — border-source based) */
+  --dc-hover-tint-icon:    color-mix(in srgb, var(--dc-border-source) 15%, transparent);
+  --dc-hover-tint-icon-md: color-mix(in srgb, var(--dc-border-source) 30%, transparent);
+
+  /* Borders (border-source based) */
+  --dc-divider:        color-mix(in srgb, var(--dc-border-source) 12%, transparent);
+  --dc-border-faint:   color-mix(in srgb, var(--dc-border-source) 20%, transparent);
+  --dc-border-default: color-mix(in srgb, var(--dc-border-source) 30%, transparent);
+  --dc-border-medium:  color-mix(in srgb, var(--dc-border-source) 35%, transparent);
+  --dc-border-strong:  color-mix(in srgb, var(--dc-border-source) 50%, transparent);
+  --dc-border-hover:   color-mix(in srgb, var(--dc-border-source) 80%, transparent);
+
+  /* Glass / overlay (surface-based) */
+  --dc-glass-bg:        color-mix(in srgb, var(--dc-surface-bright) 55%, transparent);
+  --dc-glass-nav:       color-mix(in srgb, var(--dc-surface-bright) 65%, transparent);
+  --dc-glass-search:    color-mix(in srgb, var(--dc-border-source)  18%, transparent);
+  --dc-overlay-surface: color-mix(in srgb, var(--dc-surface) 50%, transparent);
+  --dc-overlay-modal:   color-mix(in srgb, var(--dc-surface) 80%, transparent);
+
+  /* Close / icon button states */
+  --dc-close-bg:    color-mix(in srgb, var(--dc-border-source) 20%, transparent);
+  --dc-close-hover: color-mix(in srgb, var(--dc-border-source) 40%, transparent);
+
+  /* Focus rings */
+  --dc-focus-ring:       color-mix(in srgb, var(--dc-primary) 12%, transparent);
+  --dc-focus-ring-hover: color-mix(in srgb, var(--dc-primary) 40%, transparent);
+  --dc-error-focus-ring: color-mix(in srgb, var(--dc-error)   10%, transparent);
+
+  /* Destructive / error states */
+  --dc-error-border:       color-mix(in srgb, var(--dc-error) 30%, transparent);
+  --dc-error-border-hover: color-mix(in srgb, var(--dc-error) 60%, transparent);
+  --dc-error-bg:           color-mix(in srgb, var(--dc-error) 10%, transparent);
+
+  /* Button primary shadows */
+  --dc-btn-primary-shadow:         0 4px 20px color-mix(in srgb, var(--dc-primary-dim) 35%, transparent);
+  --dc-btn-primary-shadow-hover:   0 6px 28px color-mix(in srgb, var(--dc-primary-dim) 50%, transparent);
+  --dc-btn-primary-shadow-press:   0 2px 12px color-mix(in srgb, var(--dc-primary-dim) 30%, transparent);
+
+  /* Button primary hover gradient — lighter variant of primary */
+  --dc-btn-primary-gradient-hover: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--dc-primary)     80%, white) 0%,
+    color-mix(in srgb, var(--dc-primary-dim) 90%, white) 100%
+  );
+
+  /* Spinner track (semi-transparent white — works on any colored button) */
+  --dc-spinner-border: color-mix(in srgb, white 30%, transparent);
+
+  /* Image overlays */
+  --dc-image-overlay-top:    color-mix(in srgb, var(--dc-surface) 10%, transparent);
+  --dc-image-overlay-bottom: color-mix(in srgb, var(--dc-surface) 70%, transparent);
+
+  /* Hero parallax glows */
+  --dc-hero-glow-primary:   color-mix(in srgb, var(--dc-primary)   15%, transparent);
+  --dc-hero-glow-dim:       color-mix(in srgb, var(--dc-primary-dim) 12%, transparent);
+  --dc-hero-glow-secondary: color-mix(in srgb, var(--dc-secondary)   8%, transparent);
+  --dc-hero-badge-text:     color-mix(in srgb, var(--dc-primary) 70%, transparent);
+  --dc-hero-badge-sub:      color-mix(in srgb, var(--dc-primary) 40%, transparent);
+}
+
+/* ─── LIGHT MODE ──────────────────────────────────────────────────
+   Only base tokens are overridden here.
+   All derived tokens (borders, hover tints, focus rings, shadows,
+   glass, overlays, gradients) recompute automatically via
+   color-mix() from the overridden base values.
+────────────────────────────────────────────────────────────────── */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+
+    --dc-surface:                   #f5f7ff;
+    --dc-surface-container-lowest:  #ffffff;
+    --dc-surface-container-low:     #eef0ff;
+    --dc-surface-container:         #e8eaff;
+    --dc-surface-container-high:    #e0e3ff;
+    --dc-surface-container-highest: #d8dbff;
+    --dc-surface-bright:            #ffffff;
+
+    --dc-primary:           #4547ce;
+    --dc-primary-dim:       #3234b0;
+    --dc-primary-fixed:     #eaeaff;
+    --dc-on-primary:        #ffffff;
+    --dc-primary-container: #eaeaff;
+
+    --dc-on-surface:         #0d0f2d;
+    --dc-on-surface-variant: #3f4263;
+
+    --dc-outline:         #6b6d8f;
+    --dc-outline-variant: #c4c5e0;
+    /* Use outline (darker) as border source on light surfaces */
+    --dc-border-source:   #6b6d8f;
+
+    --dc-error:              #ba1a1a;
+    --dc-error-container:    #ffdad6;
+    --dc-on-error-container: #410002;
+
+    --dc-secondary:           #5b5898;
+    --dc-secondary-container: #e4e0ff;
+    --dc-tertiary:            #7c4e69;
+
+    --dc-success:           #006c4c;
+    --dc-success-container: #94f7cb;
+    --dc-warning:           #7c5700;
+    --dc-warning-container: #ffdea1;
+  }
+}
+
+/* Explicit light override (beats @media) */
+[data-theme="light"] {
+  color-scheme: light;
+
+  --dc-surface:                   #f5f7ff;
+  --dc-surface-container-lowest:  #ffffff;
+  --dc-surface-container-low:     #eef0ff;
+  --dc-surface-container:         #e8eaff;
+  --dc-surface-container-high:    #e0e3ff;
+  --dc-surface-container-highest: #d8dbff;
+  --dc-surface-bright:            #ffffff;
+
+  --dc-primary:           #4547ce;
+  --dc-primary-dim:       #3234b0;
+  --dc-primary-fixed:     #eaeaff;
+  --dc-on-primary:        #ffffff;
+  --dc-primary-container: #eaeaff;
+
+  --dc-on-surface:         #0d0f2d;
+  --dc-on-surface-variant: #3f4263;
+
+  --dc-outline:         #6b6d8f;
+  --dc-outline-variant: #c4c5e0;
+  --dc-border-source:   #6b6d8f;
+
+  --dc-error:              #ba1a1a;
+  --dc-error-container:    #ffdad6;
+  --dc-on-error-container: #410002;
+
+  --dc-secondary:           #5b5898;
+  --dc-secondary-container: #e4e0ff;
+  --dc-tertiary:            #7c4e69;
+
+  --dc-success:           #006c4c;
+  --dc-success-container: #94f7cb;
+  --dc-warning:           #7c5700;
+  --dc-warning-container: #ffdea1;
+}
+
+/* Explicit dark override (beats @media) */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+/* ─── BASE STYLES ─────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--dc-surface);
+  color: var(--dc-on-surface);
+  font-family: var(--dc-font-body);
+  font-size: var(--dc-body-md);
+  line-height: 1.6;
+  transition: background-color var(--dc-transition-base), color var(--dc-transition-base);
+}
