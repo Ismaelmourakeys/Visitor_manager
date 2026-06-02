@@ -1,5 +1,5 @@
 function App() {
-  
+
   return (
     <div>
       <luster-input
@@ -19,13 +19,12 @@ function App() {
         helper-text="At least 8 characters"
       ></luster-input>
 
-      <luster-input
+      {/* <luster-input
         label="Username"
         placeholder="Choose a username"
-        Error
         error-message="Username is already taken"
-      ></luster-input>
-      
+      ></luster-input> */}
+
       <luster-button>
         Enviar
       </luster-button>
