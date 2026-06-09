@@ -1,95 +1,106 @@
-// AdminDashboard.tsx
 import { useState } from 'react';
-import { mockVisitors } from '../../data/mockVisitors';
-import { VisitorCard } from '../../components/layout/VisitorCard/VisitorCard';
+import type { Visitor, VisitorStatus } from '../../types/visitor';
+import { VisitorCard } from '../../components/VisitorCard/VisitorCard';
 import './AdminDashboard.css';
 
-type FilterTab = 'All Visitors' | 'New' | 'Contact Made';
+interface AdminDashboardProps {
+  visitors: Visitor[];
+}
 
-export function AdminDashboard() {
-    const [search, setSearch] = useState('');
-    const [activeTab, setActiveTab] = useState<FilterTab>('All Visitors');
+type FilterTab = 'All Visitors' | VisitorStatus;
 
-    const filtered = mockVisitors.filter(v => {
-        const matchSearch = v.fullName.toLowerCase().includes(search.toLowerCase());
-        const matchTab =
-            activeTab === 'All Visitors' ||
-            v.status === activeTab;
-        return matchSearch && matchTab;
-    });
+const TABS: FilterTab[] = ['All Visitors', 'New', 'Contact Made', 'Regular'];
 
-    const tabs: FilterTab[] = ['All Visitors', 'New', 'Contact Made'];
+export function AdminDashboard({ visitors }: AdminDashboardProps) {
+  const [search, setSearch] = useState('');
+  const [activeTab, setActiveTab] = useState<FilterTab>('All Visitors');
 
-    return (
-        <div className="dashboard">
-            {/* Header */}
-            <div className="dashboard-header">
-                <div>
-                    <h1>Visitor Log</h1>
-                    <p>Manage and follow up with recent guests.</p>
-                </div>
-                <div className="dashboard-actions">
-                    <input
-                        type="text"
-                        placeholder="Search visitors..."
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                        className="search-input"
-                    />
-                    <button className="btn-icon">🔔</button>
-                </div>
-            </div>
+  const filtered = visitors.filter(v => {
+    const matchSearch = v.fullName.toLowerCase().includes(search.toLowerCase());
+    const matchTab = activeTab === 'All Visitors' || v.status === activeTab;
+    return matchSearch && matchTab;
+  });
 
-            {/* Filtros */}
-            <div className="dashboard-filters">
-                <div className="tabs">
-                    {tabs.map(tab => (
-                        <button
-                            key={tab}
-                            className={activeTab === tab ? 'tab active' : 'tab'}
-                            onClick={() => setActiveTab(tab)}
-                        >
-                            {tab}
-                            <span className="tab-count">
-                                {tab === 'All Visitors'
-                                    ? mockVisitors.length
-                                    : mockVisitors.filter(v => v.status === tab).length}
-                            </span>
-                        </button>
-                    ))}
-                </div>
-                <div className="filter-actions">
-                    <button className="btn-outline">⚙ Filter</button>
-                    <button className="btn-outline">↓ Export</button>
-                </div>
-            </div>
+  function countByStatus(status: VisitorStatus) {
+    return visitors.filter(v => v.status === status).length;
+  }
 
-            {/* Lista de visitantes */}
-            <div className="visitor-list">
-                {filtered.length === 0 ? (
-                    <p className="empty-state">No visitors found.</p>
-                ) : (
-                    filtered.map(visitor => (
-                        <VisitorCard
-                            key={visitor.id}
-                            visitor={visitor}
-                            onViewDetails={(id) => console.log('Ver detalhes:', id)}
-                        />
-                    ))
-                )}
-            </div>
+  function tabCount(tab: FilterTab) {
+    return tab === 'All Visitors' ? visitors.length : countByStatus(tab as VisitorStatus);
+  }
 
-            {/* Paginação */}
-            <div className="pagination">
-                <span>Showing 1 to {filtered.length} of {filtered.length} entries</span>
-                <div className="page-controls">
-                    <button>‹</button>
-                    <button className="active">1</button>
-                    <button>2</button>
-                    <button>3</button>
-                    <button>›</button>
-                </div>
-            </div>
+  return (
+    <div className="dashboard">
+      {/* Header */}
+      <div className="dashboard__header">
+        <div className="dashboard__title-group">
+          <h1 className="dashboard__title">Visitor Log</h1>
+          <p className="dashboard__subtitle">Manage and follow up with recent guests.</p>
         </div>
-    );
+        <div className="dashboard__header-actions">
+          <div className="dashboard__search-wrap">
+            <span className="dashboard__search-icon">🔍</span>
+            <input
+              type="text"
+              className="dashboard__search"
+              placeholder="Search visitors..."
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+            />
+          </div>
+          <button className="dashboard__icon-btn" title="Notifications">🔔</button>
+        </div>
+      </div>
+
+      {/* Tabs + Ações */}
+      <div className="dashboard__toolbar">
+        <div className="dashboard__tabs">
+          {TABS.map(tab => (
+            <button
+              key={tab}
+              className={`dashboard__tab ${activeTab === tab ? 'dashboard__tab--active' : ''}`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab}
+              <span className="dashboard__tab-count">{tabCount(tab)}</span>
+            </button>
+          ))}
+        </div>
+        <div className="dashboard__toolbar-actions">
+          <button className="dashboard__outline-btn">⚙ Filter</button>
+          <button className="dashboard__outline-btn">↓ Export</button>
+        </div>
+      </div>
+
+      {/* Lista */}
+      <div className="dashboard__list">
+        {filtered.length === 0 ? (
+          <div className="dashboard__empty">
+            <p>No visitors found.</p>
+            <span>Try a different search or filter.</span>
+          </div>
+        ) : (
+          filtered.map(visitor => (
+            <VisitorCard
+              key={visitor.id}
+              visitor={visitor}
+              onViewDetails={id => console.log('View details:', id)}
+            />
+          ))
+        )}
+      </div>
+
+      {/* Paginação */}
+      <div className="dashboard__pagination">
+        <span className="dashboard__pagination-info">
+          Showing 1 to {filtered.length} of {filtered.length} entries
+        </span>
+        <div className="dashboard__pages">
+          <button className="dashboard__page-btn">‹</button>
+          <button className="dashboard__page-btn dashboard__page-btn--active">1</button>
+          <button className="dashboard__page-btn">›</button>
+        </div>
+      </div>
+    </div>
+  );
 }
