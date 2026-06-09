@@ -8,19 +8,14 @@
   flex-wrap: wrap;
 }
 
-.visitor-card:last-child {
-  border-bottom: none;
-}
-
-.visitor-card:hover {
-  background: #fafafa;
-}
+.visitor-card:last-child { border-bottom: none; }
+.visitor-card:hover { background: #fafafa; }
 
 .visitor-card__left {
   display: flex;
   flex-direction: column;
   gap: 4px;
-  min-width: 160px;
+  min-width: 180px;
   flex: 1;
 }
 
@@ -42,32 +37,26 @@
   color: #6b7280;
 }
 
-.visitor-card__phone {
+.visitor-card__meta {
   display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  color: #374151;
-  min-width: 140px;
+  gap: 20px;
+  flex: 2;
+  flex-wrap: wrap;
 }
 
-.visitor-card__hymn {
+.visitor-card__meta-item {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  flex: 1;
+  font-size: 13px;
+  color: #374151;
 }
 
-.visitor-card__hymn-label {
+.visitor-card__meta-label {
   font-size: 10px;
   font-weight: 700;
   color: #9ca3af;
   letter-spacing: 0.05em;
-}
-
-.visitor-card__hymn span:last-child {
-  font-size: 13px;
-  color: #374151;
 }
 
 .visitor-card__btn {
@@ -78,25 +67,14 @@
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  white-space: nowrap;
   padding: 6px 12px;
   border-radius: 6px;
+  white-space: nowrap;
 }
 
-.visitor-card__btn:hover {
-  background: #f0fdf4;
-}
+.visitor-card__btn:hover { background: #f0fdf4; }
 
-/* Mobile */
 @media (max-width: 640px) {
-  .visitor-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-
-  .visitor-card__btn {
-    margin-left: 0;
-    padding-left: 0;
-  }
+  .visitor-card { flex-direction: column; align-items: flex-start; }
+  .visitor-card__btn { margin-left: 0; padding-left: 0; }
 }

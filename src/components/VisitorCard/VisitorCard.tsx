@@ -4,14 +4,12 @@ import './VisitorCard.css';
 
 interface VisitorCardProps {
   visitor: Visitor;
-  onViewDetails: (id: string) => void;
+  onViewDetails: (visitor: Visitor) => void;
 }
 
 export function VisitorCard({ visitor, onViewDetails }: VisitorCardProps) {
-  const formattedDate = new Date(visitor.visitDate + 'T00:00:00').toLocaleDateString('en-US', {
-    month: 'short',
-    day: '2-digit',
-    year: 'numeric',
+  const formattedDate = new Date(visitor.visitDate + 'T00:00:00').toLocaleDateString('pt-BR', {
+    day: '2-digit', month: 'short', year: 'numeric',
   });
 
   return (
@@ -21,26 +19,35 @@ export function VisitorCard({ visitor, onViewDetails }: VisitorCardProps) {
           <span className="visitor-card__name">{visitor.fullName}</span>
           <Badge status={visitor.status} />
         </div>
-        <span className="visitor-card__date">Visited: {formattedDate}</span>
+        <span className="visitor-card__date">📅 {formattedDate}</span>
       </div>
 
-      <div className="visitor-card__phone">
-        <span className="visitor-card__icon">📞</span>
-        {visitor.phone}
+      <div className="visitor-card__meta">
+        {visitor.visitedTimes && (
+          <span className="visitor-card__meta-item">
+            <span className="visitor-card__meta-label">VISITAS</span>
+            {visitor.visitedTimes}
+          </span>
+        )}
+        {visitor.position && (
+          <span className="visitor-card__meta-item">
+            <span className="visitor-card__meta-label">CARGO</span>
+            {visitor.position}
+          </span>
+        )}
+        {visitor.howFound && (
+          <span className="visitor-card__meta-item">
+            <span className="visitor-card__meta-label">COMO CONHECEU</span>
+            {visitor.howFound}
+          </span>
+        )}
       </div>
-
-      {visitor.favoriteHymn && (
-        <div className="visitor-card__hymn">
-          <span className="visitor-card__hymn-label">FAVORITE HYMN</span>
-          <span>{visitor.favoriteHymn}</span>
-        </div>
-      )}
 
       <button
         className="visitor-card__btn"
-        onClick={() => onViewDetails(visitor.id)}
+        onClick={() => onViewDetails(visitor)}
       >
-        View Details
+        Ver Detalhes
       </button>
     </div>
   );

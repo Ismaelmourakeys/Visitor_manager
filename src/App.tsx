@@ -2,18 +2,29 @@ import { useState } from 'react';
 import { Sidebar } from './components/layout/Sidebar';
 import { RegistrationForm } from './pages/RegistrationForm/RegistrationForm';
 import { AdminDashboard } from './pages/AdminDashboard/AdminDashboard';
-import type { Visitor } from './types/visitor';
+import type { Visitor, VisitorStatus } from './types/visitor';
 import { mockVisitors } from './data/mockVisitors';
 import './App.css';
 
 type Page = 'form' | 'dashboard';
 
 function App() {
+
   const [activePage, setActivePage] = useState<Page>('form');
   const [visitors, setVisitors] = useState<Visitor[]>(mockVisitors);
 
+  function getStatusByVisits(visitedTimes: string | undefined): VisitorStatus {
+    if (visitedTimes === '3 vezes ou mais') return 'Regular';
+    if (visitedTimes === '2 vezes') return 'Contact Made';
+    return 'New'; // 1 vez ou não informado
+  }
+
   function handleNewVisitor(visitor: Visitor) {
-    setVisitors(prev => [visitor, ...prev]);
+    const visitorWithStatus: Visitor = {
+      ...visitor,
+      status: getStatusByVisits(visitor.visitedTimes),
+    };
+    setVisitors(prev => [visitorWithStatus, ...prev]);
     setActivePage('dashboard');
   }
 
