@@ -28,7 +28,9 @@
   gap: 6px;
 }
 
-.dashboard__telao-btn:hover { background: #1b4332; }
+.dashboard__telao-btn:hover {
+  background: #1b4332;
+}
 
 .dashboard__title {
   font-size: 20px;
@@ -75,6 +77,79 @@
 
 .dashboard__search:focus {
   border-color: #2d6a4f;
+}
+
+.dashboard__filters {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.dashboard__filters-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.dashboard__filter-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.dashboard__filter-field label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #6b7280;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.dashboard__filter-field input,
+.dashboard__filter-field select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+.dashboard__filter-field input:focus,
+.dashboard__filter-field select:focus {
+  border-color: #2d6a4f;
+}
+
+.dashboard__filter-clear {
+  margin-top: 14px;
+  background: none;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.dashboard__filter-clear:hover {
+  background: #fef2f2;
+}
+
+.dashboard__outline-btn--active {
+  background: #f0fdf4;
+  border-color: #2d6a4f;
+  color: #2d6a4f;
+  font-weight: 600;
+}
+
+@media (max-width: 640px) {
+  .dashboard__filters-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .dashboard__icon-btn {
@@ -288,7 +363,7 @@
   color: #1a1a1a;
 }
 
-.dashboard__welcome > p {
+.dashboard__welcome>p {
   font-size: 14px;
   color: #6b7280;
 }

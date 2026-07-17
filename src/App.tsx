@@ -4,6 +4,7 @@ import { auth } from './lib/firebase';
 import { useAuth } from './contexts/AuthContext';
 import { useVisitors } from './hooks/useVisitors';
 import { useChurchProfile } from './hooks/useChurchProfile';
+import { useNotifications } from './hooks/useNotifications';
 import { Sidebar } from './components/layout/Sidebar';
 import { RegistrationForm } from './pages/RegistrationForm/RegistrationForm';
 import { AdminDashboard } from './pages/AdminDashboard/AdminDashboard';
@@ -26,7 +27,21 @@ function App() {
   const { user, loading: authLoading } = useAuth();
   const { church, loading: churchLoading, refresh } = useChurchProfile(user?.uid);
   const { visitors, loading: visitorsLoading, addVisitor } = useVisitors(user?.uid);
+
+  // ✅ todas as funções desestruturadas
+  const {
+    notifications,
+    toasts,
+    unreadCount,
+    markAllRead,
+    markAllUnread,
+    toggleRead,
+    markAsRead,
+    dismissToast,
+  } = useNotifications(visitors, visitorsLoading);
+
   const [telaoOpen, setTelaoOpen] = useState(false);
+  const [showNotifPanel, setShowNotifPanel] = useState(false);
   const [activePage, setActivePage] = useState<Page>('dashboard');
 
   async function handleNewVisitor(visitor: Visitor) {
@@ -38,8 +53,7 @@ function App() {
     setActivePage('dashboard');
   }
 
-  // Carregando autenticação
-  if (authLoading) {
+  if (authLoading || churchLoading) {
     return (
       <div style={{
         minHeight: '100vh',
@@ -55,38 +69,12 @@ function App() {
     );
   }
 
-  // Não está logado
   if (!user) return <Login />;
 
-  // Verificando se tem perfil da igreja
-  if (churchLoading) {
-    return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#0f1923',
-        color: 'rgba(255,255,255,0.5)',
-        fontSize: '14px',
-      }}>
-        Carregando...
-      </div>
-    );
-  }
-
-  // Primeira vez — sem perfil cadastrado
   if (!church) {
-    return (
-      <ChurchProfile
-        user={user}
-        onComplete={refresh}
-      />
-    );
+    return <ChurchProfile user={user} onComplete={refresh} />;
   }
 
-  // App completo
-  // App completo
   return (
     <>
       <div className="app-layout">
@@ -110,6 +98,16 @@ function App() {
               church={church}
               churchId={user.uid}
               onTelao={() => setTelaoOpen(true)}
+              notifications={notifications}
+              toasts={toasts}
+              unreadCount={unreadCount}
+              showNotifPanel={showNotifPanel}
+              onToggleNotifPanel={() => setShowNotifPanel(v => !v)}
+              onMarkAllRead={markAllRead}
+              onMarkAllUnread={markAllUnread}
+              onToggleRead={toggleRead}
+              onMarkAsRead={markAsRead}
+              onDismissToast={dismissToast}
             />
           )}
           {activePage === 'settings' && (
@@ -122,7 +120,6 @@ function App() {
         </main>
       </div>
 
-      {/* Telão fora do layout pra cobrir tudo ✅ */}
       {telaoOpen && (
         <Telao
           visitors={visitors}
@@ -134,4 +131,4 @@ function App() {
   );
 }
 
-  export default App;
+export default App;
