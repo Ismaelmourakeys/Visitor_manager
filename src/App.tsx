@@ -12,6 +12,7 @@ import { Login } from './pages/Login/Login';
 import { ChurchProfile } from './pages/ChurchProfile/ChurchProfile';
 import { Settings } from './pages/Settings/Settings';
 import { Telao } from './pages/Telao/Telao';
+import { Landing } from './pages/Landing/Landing';
 import type { Visitor, VisitorStatus } from './types/visitor';
 import './App.css';
 
@@ -28,20 +29,16 @@ function App() {
   const { church, loading: churchLoading, refresh } = useChurchProfile(user?.uid);
   const { visitors, loading: visitorsLoading, addVisitor } = useVisitors(user?.uid);
 
-  // ✅ todas as funções desestruturadas
   const {
-    notifications,
-    toasts,
-    unreadCount,
-    markAllRead,
-    markAllUnread,
-    toggleRead,
-    markAsRead,
-    dismissToast,
+    notifications, toasts, unreadCount,
+    markAllRead, markAllUnread,
+    toggleRead, markAsRead, dismissToast,
   } = useNotifications(visitors, visitorsLoading);
 
   const [telaoOpen, setTelaoOpen] = useState(false);
   const [showNotifPanel, setShowNotifPanel] = useState(false);
+  const [showLanding, setShowLanding] = useState(true);
+  const [startWithRegister, setStartWithRegister] = useState(false);
   const [activePage, setActivePage] = useState<Page>('dashboard');
 
   async function handleNewVisitor(visitor: Visitor) {
@@ -53,6 +50,7 @@ function App() {
     setActivePage('dashboard');
   }
 
+  // 1. Carregando
   if (authLoading || churchLoading) {
     return (
       <div style={{
@@ -69,19 +67,43 @@ function App() {
     );
   }
 
-  if (!user) return <Login />;
+  // 2. Landing page — só aparece se não estiver logado e showLanding for true
+  if (!user && showLanding) {
+    return (
+      <Landing
+        onLogin={() => {
+          setStartWithRegister(false);
+          setShowLanding(false);
+        }}
+        onRegister={() => {
+          setStartWithRegister(true);
+          setShowLanding(false);
+        }}
+      />
+    );
+  }
 
+  // 3. Tela de login/cadastro
+  if (!user) {
+    return <Login startWithRegister={startWithRegister} />;
+  }
+
+  // 4. Perfil da igreja — primeiro acesso
   if (!church) {
     return <ChurchProfile user={user} onComplete={refresh} />;
   }
 
+  // 5. App completo
   return (
     <>
       <div className="app-layout">
         <Sidebar
           activePage={activePage}
           onNavigate={setActivePage}
-          onLogout={() => signOut(auth)}
+          onLogout={() => {
+            signOut(auth);
+            setShowLanding(true); // volta pra landing ao sair
+          }}
           church={church}
         />
         <main className="app-content">
