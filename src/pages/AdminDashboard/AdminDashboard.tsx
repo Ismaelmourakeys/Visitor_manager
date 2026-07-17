@@ -2,24 +2,28 @@ import { useState } from 'react';
 import type { Visitor, VisitorStatus } from '../../types/visitor';
 import { VisitorCard } from '../../components/VisitorCard/VisitorCard';
 import { VisitorDetails } from '../../components/VisitorDetails/VisitorDetails';
+import type { ChurchData } from '../../hooks/useChurchProfile';
 import './AdminDashboard.css';
 
 interface AdminDashboardProps {
   visitors: Visitor[];
   loading: boolean;
+  church: ChurchData;
+  churchId: string; 
+  onTelao: () => void;
 }
 
 const TAB_LABELS: Record<string, string> = {
   'All Visitors': 'Todos os Visitantes',
-  'New':          'Novo',
+  'New': 'Novo',
   'Contact Made': 'Recorrente',
-  'Regular':      'Regular',
+  'Regular': 'Regular',
 };
 
 const TAB_VALUES = ['All Visitors', 'New', 'Contact Made', 'Regular'] as const;
 type FilterTab = typeof TAB_VALUES[number];
 
-export function AdminDashboard({ visitors, loading }: AdminDashboardProps) {
+export function AdminDashboard({ visitors, loading, church, churchId, onTelao }: AdminDashboardProps) {
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<FilterTab>('All Visitors');
   const [selectedVisitor, setSelectedVisitor] = useState<Visitor | null>(null);
@@ -43,8 +47,11 @@ export function AdminDashboard({ visitors, loading }: AdminDashboardProps) {
   return (
     <div className="dashboard">
       <div className="dashboard__header">
+        <button className="dashboard__telao-btn" onClick={onTelao} title="Modo Telão">
+          📺 Telão
+        </button>
         <div className="dashboard__title-group">
-          <h1 className="dashboard__title">Visitantes Registrados</h1>
+          <h1 className="dashboard__title">Visitantes — {church.churchName}</h1>
           <p className="dashboard__subtitle">Gerencie e acompanhe os visitantes do ministério.</p>
         </div>
         <div className="dashboard__header-actions">
@@ -144,7 +151,10 @@ export function AdminDashboard({ visitors, loading }: AdminDashboardProps) {
       {selectedVisitor && (
         <VisitorDetails
           visitor={selectedVisitor}
+          churchId={churchId}
           onClose={() => setSelectedVisitor(null)}
+          onDeleted={() => setSelectedVisitor(null)}
+          onUpdated={(updated) => setSelectedVisitor(updated)}
         />
       )}
     </div>

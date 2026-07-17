@@ -108,3 +108,93 @@
 }
 
 .modal__btn-close:hover { background: #1b4332; }
+
+.modal__edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.modal__edit-field label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #6b7280;
+}
+
+.modal__edit-field input,
+.modal__edit-field select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+.modal__edit-field input:focus,
+.modal__edit-field select:focus {
+  border-color: #2d6a4f;
+}
+
+.modal__edit-row {
+  display: flex;
+  gap: 12px;
+}
+
+.modal__btn-delete {
+  background: none;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.modal__btn-delete:hover { background: #fef2f2; }
+
+.modal__btn-edit {
+  background: none;
+  border: 1px solid #d1d5db;
+  color: #374151;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.modal__btn-edit:hover { background: #f9fafb; }
+
+.modal__confirm-delete {
+  background: #fef2f2;
+  border-top: 1px solid #fecaca;
+  border-bottom: 1px solid #fecaca;
+  padding: 14px 24px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.modal__confirm-delete p { margin-bottom: 10px; }
+
+.modal__confirm-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.modal__confirm-actions button {
+  padding: 7px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+  border: 1px solid #d1d5db;
+  background: #fff;
+}
+
+.modal__confirm-delete-btn {
+  background: #dc2626 !important;
+  color: #fff !important;
+  border-color: #dc2626 !important;
+}

@@ -1,29 +1,11 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 
-export function useLusterInput(onChange: (value: string) => void) {
-  const ref = useRef<HTMLElement>(null);
+export function useLusterInput() {
+    const ref = useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
+    function getValue(): string {
+        return ref.current?.shadowRoot?.querySelector('input')?.value ?? '';
+    }
 
-    // Aguarda o Stencil terminar de renderizar o shadow DOM
-    const timer = setTimeout(() => {
-      const shadowInput = el.shadowRoot?.querySelector('input');
-      if (!shadowInput) return;
-
-      function handleInput() {
-        onChange(shadowInput!.value);
-      }
-
-      shadowInput.addEventListener('input', handleInput);
-
-      // Cleanup
-      return () => shadowInput.removeEventListener('input', handleInput);
-    }, 100);
-
-    return () => clearTimeout(timer);
-  }, [onChange]);
-
-  return ref;
+    return { ref, getValue };
 }

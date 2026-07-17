@@ -1,0 +1,148 @@
+.telao {
+    position: fixed;
+    inset: 0;
+    background: #0a0f1a;
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    overflow: hidden;
+}
+
+/* Fundo com gradiente animado */
+.telao::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(ellipse at 20% 20%, rgba(45, 106, 79, 0.15) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 80%, rgba(26, 74, 138, 0.12) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.telao__close {
+    position: absolute;
+    top: 20px;
+    right: 24px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: rgba(255, 255, 255, 0.5);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-size: 13px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s;
+}
+
+.telao__close:hover {
+    background: rgba(255, 255, 255, 0.15);
+    color: #fff;
+}
+
+.telao__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 32px;
+    width: 100%;
+    max-width: 900px;
+    position: relative;
+    z-index: 1;
+}
+
+/* Igreja */
+.telao__church {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.telao__logo {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+.telao__church-name {
+    font-size: 18px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.6);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+/* Título */
+.telao__title {
+    font-size: clamp(40px, 6vw, 72px);
+    font-weight: 800;
+    color: #fff;
+    text-align: center;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #ffffff, #40916c);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* Lista de visitantes */
+.telao__visitors {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+}
+
+.telao__visitor-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 20px 28px;
+    backdrop-filter: blur(10px);
+}
+
+.telao__visitor-number {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #2d6a4f, #40916c);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+}
+
+.telao__visitor-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.telao__visitor-name {
+    font-size: clamp(20px, 3vw, 32px);
+    font-weight: 700;
+    color: #fff;
+}
+
+.telao__visitor-how {
+    font-size: clamp(14px, 2vw, 20px);
+    color: #40916c;
+    font-weight: 500;
+}
+
+/* Rodapé */
+.telao__footer {
+    font-size: 15px;
+    color: rgba(255, 255, 255, 0.3);
+    text-align: center;
+    text-transform: capitalize;
+}
