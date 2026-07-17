@@ -10,16 +10,24 @@ interface RegistrationFormProps {
 }
 
 export function RegistrationForm({ onSubmit, church }: RegistrationFormProps) {
-  // Campos nativos (select e date funcionam normal)
   const [visitedTimes, setVisitedTimes] = useState('');
   const [visitDate, setVisitDate] = useState(new Date().toISOString().split('T')[0]);
 
-  // Campos Luster — lidos direto do shadow DOM no submit
   const fullName = useLusterInput();
   const phone = useLusterInput();
   const email = useLusterInput();
   const position = useLusterInput();
   const howFound = useLusterInput();
+
+  function handleClear() {
+    fullName.clear();
+    phone.clear();
+    email.clear();
+    position.clear();
+    howFound.clear();
+    setVisitedTimes('');
+    setVisitDate(new Date().toISOString().split('T')[0]);
+  }
 
   async function handleSubmit() {
     const values = {
@@ -31,8 +39,6 @@ export function RegistrationForm({ onSubmit, church }: RegistrationFormProps) {
       visitedTimes,
       visitDate,
     };
-
-    console.log('valores lidos:', values); // ← testa primeiro
 
     if (!values.fullName.trim() || !values.visitedTimes) {
       alert('Por favor, preencha os campos obrigatórios: Nome e quantas vezes visitou.');
@@ -64,6 +70,7 @@ export function RegistrationForm({ onSubmit, church }: RegistrationFormProps) {
     };
 
     onSubmit(newVisitor);
+    handleClear();
     alert('Registro bem-sucedido! Seja bem-vindo à nossa igreja.');
   }
 
@@ -143,7 +150,7 @@ export function RegistrationForm({ onSubmit, church }: RegistrationFormProps) {
         </div>
 
         <div className="reg-form__actions">
-          <button className="reg-form__clear-btn">
+          <button className="reg-form__clear-btn" onClick={handleClear}>
             Limpar
           </button>
           <button className="reg-form__submit-btn" onClick={handleSubmit}>

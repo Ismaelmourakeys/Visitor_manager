@@ -7,5 +7,12 @@ export function useLusterInput() {
         return ref.current?.shadowRoot?.querySelector('input')?.value ?? '';
     }
 
-    return { ref, getValue };
+    function clear() {
+        const input = ref.current?.shadowRoot?.querySelector('input');
+        if (input) {
+            input.value = '';
+        }
+    }
+
+    return { ref, getValue, clear };
 }

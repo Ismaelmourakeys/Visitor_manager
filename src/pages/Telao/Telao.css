@@ -6,11 +6,10 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 40px;
+    padding: 60px 40px 40px;
     overflow: hidden;
 }
 
-/* Fundo com gradiente animado */
 .telao::before {
     content: '';
     position: absolute;
@@ -22,15 +21,15 @@
 }
 
 .telao__close {
-    position: absolute;
-    top: 20px;
-    right: 24px;
+    position: fixed;
+    top: 16px;
+    right: 20px;
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
     color: rgba(255, 255, 255, 0.5);
     border-radius: 8px;
-    padding: 8px 16px;
-    font-size: 13px;
+    padding: 6px 14px;
+    font-size: 12px;
     cursor: pointer;
     z-index: 10;
     transition: all 0.2s;
@@ -45,39 +44,42 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 32px;
+    gap: 20px;
     width: 100%;
-    max-width: 900px;
+    max-width: 860px;
+    height: 100%;
+    max-height: 100vh;
     position: relative;
     z-index: 1;
+    justify-content: center;
 }
 
 /* Igreja */
 .telao__church {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 12px;
 }
 
 .telao__logo {
-    width: 56px;
-    height: 56px;
+    width: 44px;
+    height: 44px;
     border-radius: 50%;
     object-fit: cover;
     border: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .telao__church-name {
-    font-size: 18px;
+    font-size: 15px;
     font-weight: 500;
-    color: rgba(255, 255, 255, 0.6);
-    letter-spacing: 0.05em;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 0.08em;
     text-transform: uppercase;
 }
 
 /* Título */
 .telao__title {
-    font-size: clamp(40px, 6vw, 72px);
+    font-size: clamp(28px, 5vw, 60px);
     font-weight: 800;
     color: #fff;
     text-align: center;
@@ -86,36 +88,49 @@
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    margin: 0;
 }
 
-/* Lista de visitantes */
+/* Carrossel */
+.telao__carousel {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+}
+
+.telao__slide-wrap {
+    flex: 1;
+    overflow: hidden;
+}
+
 .telao__visitors {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 10px;
     width: 100%;
 }
 
 .telao__visitor-card {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 16px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 16px;
-    padding: 20px 28px;
+    border-radius: 14px;
+    padding: 16px 24px;
     backdrop-filter: blur(10px);
 }
 
 .telao__visitor-number {
-    width: 44px;
-    height: 44px;
+    width: 38px;
+    height: 38px;
     background: linear-gradient(135deg, #2d6a4f, #40916c);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     color: #fff;
     flex-shrink: 0;
@@ -124,25 +139,66 @@
 .telao__visitor-info {
     display: flex;
     flex-direction: column;
-    gap: 4px;
+    gap: 2px;
 }
 
 .telao__visitor-name {
-    font-size: clamp(20px, 3vw, 32px);
+    font-size: clamp(18px, 2.5vw, 28px);
     font-weight: 700;
     color: #fff;
 }
 
 .telao__visitor-how {
-    font-size: clamp(14px, 2vw, 20px);
+    font-size: clamp(13px, 1.8vw, 18px);
     color: #40916c;
     font-weight: 500;
 }
 
-/* Rodapé */
+.telao__arrow {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #fff;
+    border-radius: 50%;
+    width: 44px;
+    height: 44px;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s;
+    line-height: 1;
+}
+
+.telao__arrow:hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
+.telao__dots {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.telao__dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.telao__dot--active {
+    background: #40916c;
+    transform: scale(1.3);
+}
+
 .telao__footer {
-    font-size: 15px;
-    color: rgba(255, 255, 255, 0.3);
+    font-size: 13px;
+    color: rgba(255, 255, 255, 0.25);
     text-align: center;
     text-transform: capitalize;
 }
