@@ -12,6 +12,7 @@ declare module 'react' {
         'helper-text'?: string;
         'error-message'?: string;
         disabled?: boolean;
+        ref?: React.Ref<HTMLElement>; // ← adiciona essa linha
         onInput?: (e: any) => void;
       };
       'luster-button': React.HTMLAttributes<HTMLElement> & {

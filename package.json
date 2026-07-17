@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@luster-ui/ui": "^1.0.0",
+    "firebase": "^12.16.0",
+    "framer-motion": "^12.42.2",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "sass": "^1.100.0",

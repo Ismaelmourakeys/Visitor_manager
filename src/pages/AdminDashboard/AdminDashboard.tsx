@@ -6,6 +6,7 @@ import './AdminDashboard.css';
 
 interface AdminDashboardProps {
   visitors: Visitor[];
+  loading: boolean;
 }
 
 const TAB_LABELS: Record<string, string> = {
@@ -18,10 +19,10 @@ const TAB_LABELS: Record<string, string> = {
 const TAB_VALUES = ['All Visitors', 'New', 'Contact Made', 'Regular'] as const;
 type FilterTab = typeof TAB_VALUES[number];
 
-export function AdminDashboard({ visitors }: AdminDashboardProps) {
+export function AdminDashboard({ visitors, loading }: AdminDashboardProps) {
   const [search, setSearch] = useState('');
   const [activeTab, setActiveTab] = useState<FilterTab>('All Visitors');
-  const [selectedVisitor, setSelectedVisitor] = useState<Visitor | null>(null); // ✅ dentro do componente
+  const [selectedVisitor, setSelectedVisitor] = useState<Visitor | null>(null);
 
   const filtered = visitors.filter(v => {
     const matchSearch = v.fullName.toLowerCase().includes(search.toLowerCase());
@@ -76,12 +77,44 @@ export function AdminDashboard({ visitors }: AdminDashboardProps) {
         </div>
         <div className="dashboard__toolbar-actions">
           <button className="dashboard__outline-btn">⚙ Filtros</button>
-          <button className="dashboard__outline-btn">↓ Exportar</button>
         </div>
       </div>
 
       <div className="dashboard__list">
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="dashboard__empty">
+            <p>Carregando visitantes...</p>
+          </div>
+        ) : filtered.length === 0 && activeTab === 'All Visitors' && !search ? (
+          <div className="dashboard__welcome">
+            <div className="dashboard__welcome-icon">✝</div>
+            <h2>Bem-vindo ao Visitor Manager!</h2>
+            <p>Você ainda não tem visitantes cadastrados.</p>
+            <div className="dashboard__welcome-steps">
+              <div className="dashboard__welcome-step">
+                <span>1</span>
+                <div>
+                  <strong>Cadastre um visitante</strong>
+                  <p>Clique em "+ Novo Visitante" na barra lateral</p>
+                </div>
+              </div>
+              <div className="dashboard__welcome-step">
+                <span>2</span>
+                <div>
+                  <strong>Acompanhe os visitantes</strong>
+                  <p>Veja quem visitou, quantas vezes e como conheceu a igreja</p>
+                </div>
+              </div>
+              <div className="dashboard__welcome-step">
+                <span>3</span>
+                <div>
+                  <strong>Gerencie o contato</strong>
+                  <p>Use os filtros para acompanhar novos, recorrentes e regulares</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="dashboard__empty">
             <p>Visitante não encontrado.</p>
             <span>Tente um termo de pesquisa diferente.</span>
@@ -108,7 +141,6 @@ export function AdminDashboard({ visitors }: AdminDashboardProps) {
         </div>
       </div>
 
-      {/* Modal fora da lista ✅ */}
       {selectedVisitor && (
         <VisitorDetails
           visitor={selectedVisitor}

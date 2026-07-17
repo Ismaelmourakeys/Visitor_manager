@@ -1,5 +1,6 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import type { Visitor } from '../../types/visitor';
+import { useLusterInput } from '../../hooks/useLusterInput';
 import './RegistrationForm.css';
 
 interface RegistrationFormProps {
@@ -33,8 +34,15 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
     setForm(prev => ({ ...prev, [field]: value }));
   }
 
+  // Refs para os luster-inputs — useCallback evita recriar a função a cada render
+  const fullNameRef = useLusterInput(useCallback((v) => set('fullName', v), []));
+  const phoneRef = useLusterInput(useCallback((v) => set('phone', v), []));
+  const emailRef = useLusterInput(useCallback((v) => set('email', v), []));
+  const positionRef = useLusterInput(useCallback((v) => set('position', v), []));
+  const howFoundRef = useLusterInput(useCallback((v) => set('howFound', v), []));
+
   async function handleSubmit() {
-    // Validações
+    console.log('form atual:', form); // ← adiciona isso
     if (!form.fullName.trim() || !form.visitedTimes) {
       alert('Por favor, preencha os campos obrigatórios: Nome e quantas vezes visitou.');
       return;
@@ -64,7 +72,6 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
       return;
     }
 
-    // Monta o visitante
     const newVisitor: Visitor = {
       id: crypto.randomUUID(),
       fullName: form.fullName.trim(),
@@ -77,14 +84,8 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
       status: 'New',
     };
 
-    // 🔌 BACKEND: substituir as duas linhas abaixo por uma chamada API
-    // await fetch('/api/visitors', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(newVisitor),
-    // });
-
-    onSubmit(newVisitor); // ← remover quando conectar ao backend
+    // 🔌 BACKEND: substituir por fetch POST '/api/visitors'
+    onSubmit(newVisitor);
     setForm(emptyForm);
     alert('Registro bem-sucedido! Seja bem-vindo à nossa igreja.');
   }
@@ -102,26 +103,26 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
 
         <div className="reg-form__body">
           <luster-input
+            ref={fullNameRef}
             label="Nome + Sobrenome / ou Nome do Grupo *"
             placeholder="ex: Maria Silva / Grupo Filhas do Rei"
             value={form.fullName}
-            onInput={(e: any) => set('fullName', e.target.value)}
           ></luster-input>
 
           <div className="reg-form__row">
             <luster-input
+              ref={phoneRef}
               label="Telefone / WhatsApp (Opcional)"
               placeholder="(00) 00000-0000"
               value={form.phone}
-              onInput={(e: any) => set('phone', e.target.value)}
             ></luster-input>
 
             <luster-input
+              ref={emailRef}
               label="Endereço de Email (Opcional)"
               placeholder="you@example.com"
               type="email"
               value={form.email}
-              onInput={(e: any) => set('email', e.target.value)}
             ></luster-input>
           </div>
 
@@ -154,18 +155,18 @@ export function RegistrationForm({ onSubmit }: RegistrationFormProps) {
           </div>
 
           <luster-input
+            ref={positionRef}
             label="Possui algum cargo? (Opcional)"
             placeholder="Ex. Presbítero, Líder de Ministério, etc."
             value={form.position}
-            onInput={(e: any) => set('position', e.target.value)}
           ></luster-input>
 
           <luster-input
+            ref={howFoundRef}
             label="Como conheceu a igreja? (Opcional)"
             placeholder="Ex. Redes Sociais, Indicação de Amigo, etc."
             helper-text="Adoramos saber onde você nos conheceu."
             value={form.howFound}
-            onInput={(e: any) => set('howFound', e.target.value)}
           ></luster-input>
         </div>
 
