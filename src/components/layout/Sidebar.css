@@ -79,6 +79,19 @@
 
 .app-content { padding-bottom: 72px; }
 
+
+/* Logout Button */
+.sidebar__nav-item--logout {
+  color: #f87171 !important;
+}
+
+.sidebar__nav-item--logout:hover,
+.sidebar__nav-item--logout.sidebar__nav-item--active {
+  border-top-color: #f87171 !important;
+  border-left-color: #f87171 !important;
+  color: #f87171 !important;
+}
+
 /* ── Desktop: sidebar lateral ── */
 @media (min-width: 768px) {
   .sidebar {

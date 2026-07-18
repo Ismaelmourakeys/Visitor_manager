@@ -30,10 +30,10 @@ function App() {
   const { visitors, loading: visitorsLoading, addVisitor } = useVisitors(user?.uid);
 
   const {
-    notifications, toasts, unreadCount,
-    markAllRead, markAllUnread,
-    toggleRead, markAsRead, dismissToast,
-  } = useNotifications(visitors, visitorsLoading);
+  notifications, toasts, unreadCount,
+  markAllRead, markAllUnread,
+  toggleRead, markAsRead, dismissToast,
+} = useNotifications(visitors, visitorsLoading, user?.uid);
 
   const [telaoOpen, setTelaoOpen] = useState(false);
   const [showNotifPanel, setShowNotifPanel] = useState(false);
