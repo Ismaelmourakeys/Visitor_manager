@@ -36,7 +36,6 @@
   gap: 16px;
 }
 
-/* Campos lado a lado — empilhados no mobile, lado a lado no desktop */
 .reg-form__row {
   display: flex;
   flex-direction: column;
@@ -69,29 +68,51 @@
   transition: border-color 0.15s;
   height: 44px;
 }
-/* 
-.reg-form__input-native {
-  width: 100%;
-  padding: 10px 12px;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  font-size: 14px;
-  color: #1a1a1a;
-  background: #fff;
-  outline: none;
-  height: 44px;
-  font-family: inherit;
-}
-
-.reg-form__input-native:focus {
-  border-color: #2d6a4f;
-} */
 
 .reg-form__select:focus,
 .reg-form__input-native:focus {
   border-color: #2d6a4f;
 }
 
+/* ── Luster inputs — override com variáveis --dc-* ── */
+luster-input {
+  display: block;
+  width: 100%;
+  flex: 1;
+
+  /* Superfícies → fundo branco */
+  --dc-surface: #ffffff;
+  --dc-surface-container-lowest: #ffffff;
+  --dc-surface-container-low: #ffffff;
+  --dc-surface-container: #ffffff;
+  --dc-surface-bright: #ffffff;
+
+  /* Cor de texto */
+  --dc-on-surface: #1a1a1a;
+  --dc-on-surface-variant: #092850;
+
+  /* Bordas → cinza claro igual aos inputs nativos */
+  --dc-outline: #445f88;
+  --dc-outline-variant: #4b5f7e;
+  --dc-border-source: #40597e;
+
+  /* Cor primária → verde da igreja (foco) */
+  --dc-primary: #2d6a4f;
+  --dc-primary-dim: #1b4332;
+  --dc-on-primary: #ffffff;
+
+  /* Border radius igual aos nativos */
+  --dc-round-2: 8px;
+  --dc-round-3: 8px;
+
+  /* Tipografia */
+  --dc-font-body: 'Inter', sans-serif;
+  --dc-body-md: 14px;
+  --dc-label-md: 13px;
+  --dc-label-lg: 13px;
+}
+
+/* ── Ações ── */
 .reg-form__actions {
   display: flex;
   align-items: center;
@@ -118,8 +139,6 @@
   color: #268326;
   background: #c5c3c3;
   transform: scale(1.15);
-  transition: 0.5s;
-
 }
 
 .reg-form__submit-btn {
@@ -129,6 +148,7 @@
   cursor: pointer;
   border-radius: 6px;
   padding: 8px 12px;
+  border: none;
   transform: scale(1.08);
   transition: 0.5s;
 }
@@ -136,9 +156,7 @@
 .reg-form__submit-btn:hover {
   background-color: #44a076;
   transform: scale(1.15);
-  transition: 0.5s;
 }
-
 
 /* Desktop */
 @media (min-width: 640px) {

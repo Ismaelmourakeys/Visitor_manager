@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { doc, getDoc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc, Timestamp } from 'firebase/firestore';
 import { db } from '../lib/firebase';
 import type { Visitor } from '../types/visitor';
 
@@ -8,6 +8,15 @@ export interface Notification {
     visitor: Visitor;
     timestamp: Date;
     read: boolean;
+}
+
+function getCreatedAt(visitor: Visitor): Date | null {
+    const raw = (visitor as any).createdAt;
+    if (!raw) return null;
+    if (raw instanceof Timestamp) return raw.toDate();
+    if (raw?.toDate) return raw.toDate();
+    if (typeof raw === 'string') return new Date(raw);
+    return null;
 }
 
 export function useNotifications(
@@ -19,23 +28,86 @@ export function useNotifications(
     const [toasts, setToasts] = useState<Notification[]>([]);
     const [lastSeenAt, setLastSeenAt] = useState<Date | null>(null);
     const [metaLoading, setMetaLoading] = useState(true);
-    const prevCountRef = useRef<number | null>(null);
-    const isFirstLoad = useRef(true);
 
-    // Busca o lastSeenAt do Firestore quando logar
+    // IDs já notificados — evita duplicatas ao receber updates do onSnapshot
+    const notifiedIds = useRef<Set<string>>(new Set());
+    const initialized = useRef(false);
+
+    // 1. Carrega lastSeenAt do Firestore
     useEffect(() => {
         if (!churchId) { setMetaLoading(false); return; }
 
         getDoc(doc(db, 'churches', churchId, 'meta', 'session')).then(snap => {
-            if (snap.exists()) {
-                const ts = snap.data().lastSeenAt;
-                setLastSeenAt(ts ? new Date(ts) : null);
+            if (snap.exists() && snap.data().lastSeenAt) {
+                setLastSeenAt(new Date(snap.data().lastSeenAt));
+            } else {
+                // Primeira vez — lastSeenAt = agora, pra não notificar histórico
+                const now = new Date();
+                setLastSeenAt(now);
+                setDoc(
+                    doc(db, 'churches', churchId, 'meta', 'session'),
+                    { lastSeenAt: now.toISOString() },
+                    { merge: true }
+                );
             }
             setMetaLoading(false);
         });
     }, [churchId]);
 
-    // Salva o lastSeenAt no Firestore
+    // 2. Detecta visitantes novos toda vez que a lista muda (tempo real)
+    useEffect(() => {
+        if (loading || metaLoading || lastSeenAt === null) return;
+
+        const newVisitors = visitors.filter(v => {
+            // Já foi notificado antes
+            if (notifiedIds.current.has(v.id)) return false;
+
+            const createdAt = getCreatedAt(v);
+            if (!createdAt) return false;
+
+            // Só notifica se foi criado DEPOIS do lastSeenAt
+            return createdAt > lastSeenAt;
+        });
+
+        if (newVisitors.length === 0) {
+            initialized.current = true;
+            return;
+        }
+
+        const isFirstBatch = !initialized.current;
+        initialized.current = true;
+
+        const newNotifications: Notification[] = newVisitors.map(v => ({
+            id: crypto.randomUUID(),
+            visitor: v,
+            timestamp: getCreatedAt(v) ?? new Date(),
+            read: false,
+        }));
+
+        // Marca como notificados
+        newVisitors.forEach(v => notifiedIds.current.add(v.id));
+
+        setNotifications(prev => [...newNotifications, ...prev]);
+
+        // Toasts: no primeiro batch mostra no máximo 3
+        // Em atualizações tempo real mostra todos
+        const toastBatch = isFirstBatch
+            ? newNotifications.slice(0, 3)
+            : newNotifications;
+
+        setToasts(prev => [...toastBatch, ...prev]);
+
+    }, [visitors, loading, metaLoading, lastSeenAt]);
+
+    // 3. Remove toasts automaticamente após 5s
+    useEffect(() => {
+        if (toasts.length === 0) return;
+        const timer = setTimeout(() => {
+            setToasts(prev => prev.slice(0, -1));
+        }, 5000);
+        return () => clearTimeout(timer);
+    }, [toasts]);
+
     async function saveLastSeen(date: Date) {
         if (!churchId) return;
         await setDoc(
@@ -45,66 +117,17 @@ export function useNotifications(
         );
     }
 
-    // Quando os visitantes carregam, gera notificações dos que são novos
-    useEffect(() => {
-        if (loading || metaLoading) return;
+    async function markAllRead() {
+        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+        const now = new Date();
+        setLastSeenAt(now);
+        // Atualiza o lastSeenAt no Firestore pra todos os dispositivos
+        await saveLastSeen(now);
+    }
 
-        if (isFirstLoad.current) {
-            isFirstLoad.current = false;
-            prevCountRef.current = visitors.length;
-
-            // Visitantes novos desde o último acesso
-            const newVisitors = lastSeenAt
-                ? visitors.filter(v => {
-                    const createdAt = (v as any).createdAt;
-                    if (!createdAt) return false;
-                    const date = createdAt.toDate ? createdAt.toDate() : new Date(createdAt);
-                    return date > lastSeenAt;
-                })
-                : [];
-
-            if (newVisitors.length > 0) {
-                const initial: Notification[] = newVisitors.map(v => ({
-                    id: crypto.randomUUID(),
-                    visitor: v,
-                    timestamp: (() => {
-                        const createdAt = (v as any).createdAt;
-                        return createdAt?.toDate ? createdAt.toDate() : new Date(createdAt);
-                    })(),
-                    read: false,
-                }));
-                setNotifications(initial);
-                setToasts(initial.slice(0, 3)); // máximo 3 toasts de uma vez
-            }
-            return;
-        }
-
-        // Novos visitantes em tempo real (após a carga inicial)
-        if (prevCountRef.current !== null && visitors.length > prevCountRef.current) {
-            const newVisitors = visitors.slice(0, visitors.length - prevCountRef.current);
-
-            const newNotifications: Notification[] = newVisitors.map(v => ({
-                id: crypto.randomUUID(),
-                visitor: v,
-                timestamp: new Date(),
-                read: false,
-            }));
-
-            setNotifications(prev => [...newNotifications, ...prev]);
-            setToasts(prev => [...newNotifications, ...prev]);
-        }
-
-        prevCountRef.current = visitors.length;
-    }, [visitors.length, loading, metaLoading]);
-
-    // Remove toast após 5 segundos
-    useEffect(() => {
-        if (toasts.length === 0) return;
-        const timer = setTimeout(() => {
-            setToasts(prev => prev.slice(0, -1));
-        }, 5000);
-        return () => clearTimeout(timer);
-    }, [toasts]);
+    function markAllUnread() {
+        setNotifications(prev => prev.map(n => ({ ...n, read: false })));
+    }
 
     function markAsRead(id: string) {
         setNotifications(prev =>
@@ -124,18 +147,6 @@ export function useNotifications(
         );
     }
 
-    // Marca todas como lidas E salva o timestamp no Firestore
-    async function markAllRead() {
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-        const now = new Date();
-        setLastSeenAt(now);
-        await saveLastSeen(now);
-    }
-
-    function markAllUnread() {
-        setNotifications(prev => prev.map(n => ({ ...n, read: false })));
-    }
-
     function dismissToast(id: string) {
         setToasts(prev => prev.filter(n => n.id !== id));
     }
@@ -148,9 +159,9 @@ export function useNotifications(
         unreadCount,
         markAllRead,
         markAllUnread,
-        toggleRead,
         markAsRead,
         markAsUnread,
+        toggleRead,
         dismissToast,
     };
 }
