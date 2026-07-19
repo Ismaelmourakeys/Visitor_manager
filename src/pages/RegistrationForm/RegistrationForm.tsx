@@ -9,51 +9,64 @@ interface RegistrationFormProps {
   church: ChurchData;
 }
 
-export function RegistrationForm({ onSubmit, church }: RegistrationFormProps) {
-  const [visitedTimes, setVisitedTimes] = useState('');
-  const [visitDate, setVisitDate] = useState(new Date().toISOString().split('T')[0]);
+// ── Máscara de telefone — formata conforme digita ──
+function formatPhone(value: string): string {
+  const nums = value.replace(/\D/g, '');
+  if (nums.length === 0) return '';
+  if (nums.length <= 2) return `+${nums}`;
+  if (nums.length <= 4) return `+${nums.slice(0, 2)} (${nums.slice(2)}`;
+  if (nums.length <= 9) return `+${nums.slice(0, 2)} (${nums.slice(2, 4)}) ${nums.slice(4)}`;
+  if (nums.length <= 13) return `+${nums.slice(0, 2)} (${nums.slice(2, 4)}) ${nums.slice(4, 9)}-${nums.slice(9)}`;
+  return `+${nums.slice(0, 2)} (${nums.slice(2, 4)}) ${nums.slice(4, 9)}-${nums.slice(9, 13)}`;
+}
 
+export function RegistrationForm({ onSubmit, church }: RegistrationFormProps) {
+  // Campos nativos
+  const [visitedTimes, setVisitedTimes] = useState('');
+  const [visitDate] = useState(new Date().toISOString().split('T')[0]);
+  const [phone, setPhone] = useState('+55 (11) '); // ← pré-preenchido
+
+  // Campos Luster — lidos direto do shadow DOM no submit
   const fullName = useLusterInput();
-  const phone = useLusterInput();
-  const email = useLusterInput();
   const position = useLusterInput();
   const howFound = useLusterInput();
 
   function handleClear() {
     fullName.clear();
-    phone.clear();
-    email.clear();
     position.clear();
     howFound.clear();
     setVisitedTimes('');
-    setVisitDate(new Date().toISOString().split('T')[0]);
+    setPhone('+55 (11) '); // ← reseta pro padrão
   }
 
   async function handleSubmit() {
     const values = {
       fullName: fullName.getValue(),
-      phone: phone.getValue(),
-      email: email.getValue(),
       position: position.getValue(),
       howFound: howFound.getValue(),
       visitedTimes,
       visitDate,
+      phone,
     };
 
-    if (!values.fullName.trim() || !values.visitedTimes) {
-      alert('Por favor, preencha os campos obrigatórios: Nome e quantas vezes visitou.');
+    if (!values.fullName.trim()) {
+      alert('Por favor, preencha o nome.');
       return;
     }
-    if (values.email && !/\S+@\S+\.\S+/.test(values.email)) {
-      alert('Por favor, insira um endereço de email válido.');
+    if (!values.visitedTimes) {
+      alert('Por favor, selecione quantas vezes visitou.');
       return;
     }
-    if (values.phone && !/^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/.test(values.phone)) {
-      alert('Por favor, insira um número de telefone válido.');
+    if (values.fullName.length > 100) {
+      alert('Nome deve ter no máximo 100 caracteres.');
       return;
     }
-    if (new Date(values.visitDate) > new Date()) {
-      alert('A data da visita não pode ser no futuro.');
+    if (values.howFound && values.howFound.length > 100) {
+      alert('"Como conheceu a igreja?" deve ter no máximo 100 caracteres.');
+      return;
+    }
+    if (values.position && values.position.length > 50) {
+      alert('"Cargo" deve ter no máximo 50 caracteres.');
       return;
     }
 
@@ -61,7 +74,6 @@ export function RegistrationForm({ onSubmit, church }: RegistrationFormProps) {
       id: crypto.randomUUID(),
       fullName: values.fullName.trim(),
       phone: values.phone.trim() || undefined,
-      email: values.email.trim() || undefined,
       visitedTimes: values.visitedTimes || undefined,
       visitDate: values.visitDate,
       position: values.position.trim() || undefined,
@@ -69,6 +81,7 @@ export function RegistrationForm({ onSubmit, church }: RegistrationFormProps) {
       status: 'New',
     };
 
+    // 🔌 BACKEND: substituir por fetch POST '/api/visitors'
     onSubmit(newVisitor);
     handleClear();
     alert('Registro bem-sucedido! Seja bem-vindo à nossa igreja.');
@@ -86,27 +99,48 @@ export function RegistrationForm({ onSubmit, church }: RegistrationFormProps) {
         </div>
 
         <div className="reg-form__body">
+
+          {/* Nome completo */}
           <luster-input
             ref={fullName.ref}
-            label="Nome + Sobrenome "
-            placeholder="ex: Maria Silva"
+            label="Nome + Sobrenome / ou Nome do Grupo *"
+            placeholder="ex: Maria Silva / Grupo Filhas do Rei"
           ></luster-input>
 
-          <div className="reg-form__row">
-            <luster-input
-              ref={phone.ref}
-              label="Telefone / WhatsApp (Opcional)"
-              placeholder="(00) 00000-0000"
-            ></luster-input>
-
-            <luster-input
-              ref={email.ref}
-              label="Endereço de Email (Opcional)"
-              placeholder="you@example.com"
-              type="email"
-            ></luster-input>
+          {/* Telefone com máscara */}
+          <div className="reg-form__field">
+            <label className="reg-form__label">
+              Telefone / WhatsApp (Opcional)
+            </label>
+            <input
+              className="reg-form__input-native"
+              placeholder="+55 (11) 00000-0000"
+              value={phone}
+              onChange={e => setPhone(formatPhone(e.target.value))}
+              inputMode="numeric"
+              maxLength={19}
+            />
+            <span className="reg-form__helper">
+              DDI e DDD pré-preenchidos — altere se necessário
+            </span>
           </div>
 
+          {/* Email — plano futuro
+          <div className="reg-form__field">
+            <label className="reg-form__label">
+              Endereço de Email (Opcional)
+            </label>
+            <input
+              className="reg-form__input-native"
+              type="email"
+              placeholder="you@example.com"
+              value={form.email}
+              onChange={e => set('email', e.target.value)}
+            />
+          </div>
+          */}
+
+          {/* Quantas vezes visitou + Data */}
           <div className="reg-form__row">
             <div className="reg-form__field">
               <label className="reg-form__label">
@@ -130,23 +164,26 @@ export function RegistrationForm({ onSubmit, church }: RegistrationFormProps) {
                 className="reg-form__input-native"
                 type="date"
                 value={visitDate}
-                onChange={e => setVisitDate(e.target.value)}
+                readOnly
               />
             </div>
           </div>
 
+          {/* Cargo */}
           <luster-input
             ref={position.ref}
             label="Possui algum cargo? (Opcional)"
             placeholder="Ex. Presbítero, Líder de Ministério, etc."
           ></luster-input>
 
+          {/* Como conheceu */}
           <luster-input
             ref={howFound.ref}
             label="Como conheceu a igreja? (Opcional)"
             placeholder="Ex. Redes Sociais, Indicação de Amigo, etc."
             helper-text="Adoramos saber onde você nos conheceu."
           ></luster-input>
+
         </div>
 
         <div className="reg-form__actions">
