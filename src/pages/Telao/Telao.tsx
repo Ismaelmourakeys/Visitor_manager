@@ -9,6 +9,8 @@ interface TelaoProps {
     visitors: Visitor[];
     congresses: Congress[];
     church: ChurchData;
+    presentedVisitorIds: Set<string>;
+    presentedCongressIds: Set<string>;
     onClose: () => void;
 }
 
@@ -20,10 +22,20 @@ type TelaoItem =
     | { kind: 'visitor'; data: Visitor }
     | { kind: 'congress'; data: Congress };
 
-export function Telao({ visitors, congresses, church, onClose }: TelaoProps) {
+export function Telao({
+    visitors, congresses, church,
+    presentedVisitorIds, presentedCongressIds,
+    onClose,
+}: TelaoProps) {
     const today = new Date().toISOString().split('T')[0];
-    const todayVisitors = visitors.filter(v => v.visitDate === today);
-    const todayCongresses = congresses.filter(c => c.date === today);
+
+    // Filtra apenas os NÃO apresentados do dia
+    const todayVisitors = visitors.filter(v =>
+        v.visitDate === today && !presentedVisitorIds.has(v.id)
+    );
+    const todayCongresses = congresses.filter(c =>
+        c.date === today && !presentedCongressIds.has(c.id)
+    );
 
     const [activeTab, setActiveTab] = useState<TelaoTab>('all');
     const [page, setPage] = useState(0);
@@ -43,6 +55,12 @@ export function Telao({ visitors, congresses, church, onClose }: TelaoProps) {
     const currentSlice = currentItems.slice(page * PER_PAGE, page * PER_PAGE + PER_PAGE);
 
     useEffect(() => { setPage(0); }, [activeTab]);
+
+    // Reset página se itens forem removidos e página atual não existir mais
+    useEffect(() => {
+        if (page >= totalPages && totalPages > 0) setPage(totalPages - 1);
+        if (totalPages === 0) setPage(0);
+    }, [totalPages, page]);
 
     useEffect(() => {
         if (totalPages <= 1) return;
@@ -85,9 +103,9 @@ export function Telao({ visitors, congresses, church, onClose }: TelaoProps) {
     function renderTitle() {
         const total = currentItems.length;
         if (total === 0) {
-            if (activeTab === 'visitors') return 'Nenhum visitante hoje ainda 🙏';
-            if (activeTab === 'congresses') return 'Nenhum grupo registrado hoje 🙏';
-            return 'Nenhum registro hoje ainda 🙏';
+            if (activeTab === 'visitors') return 'Todos os visitantes foram saudados! 🙏';
+            if (activeTab === 'congresses') return 'Todos os grupos foram apresentados! 🙏';
+            return 'Todos foram saudados! 🙏';
         }
         if (activeTab === 'congresses') {
             return total > 1 ? 'Grupos presentes hoje! 🎉' : 'Grupo presente hoje! 🎉';
@@ -97,9 +115,7 @@ export function Telao({ visitors, congresses, church, onClose }: TelaoProps) {
 
     return (
         <div className="telao">
-            <button className="telao__close" onClick={onClose}>
-                ✕ Sair (ESC)
-            </button>
+            <button className="telao__close" onClick={onClose}>✕ Sair (ESC)</button>
 
             <div className="telao__content">
                 {/* Igreja */}
@@ -154,7 +170,7 @@ export function Telao({ visitors, congresses, church, onClose }: TelaoProps) {
                 {/* Título */}
                 <motion.h1
                     className="telao__title"
-                    key={activeTab}
+                    key={`${activeTab}-${currentItems.length}`}
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.4 }}
@@ -211,22 +227,22 @@ export function Telao({ visitors, congresses, church, onClose }: TelaoProps) {
                                                         <span className="telao__congress-type">
                                                             {item.data.congressType}
                                                         </span>
+                                                        <span className="telao__visitor-name">
+                                                            {item.data.churchName}
+                                                        </span>
                                                         <span className="telao__visitor-how">
                                                             {item.data.groupName}
                                                         </span>
-                                                        <span className="telao__visitor-name">
-                                                            {item.data.churchName  ? `Igreja: ${item.data.churchName}` : ''}
-                                                        </span>
                                                         {item.data.pastors && (
                                                             <span className="telao__congress-detail">
-                                                                🙏 {item.data.pastors.includes(',') || item.data.pastors.includes('e ')
+                                                                🙏 {item.data.pastors.includes(',') || item.data.pastors.includes(' e ')
                                                                     ? `Pastores: ${item.data.pastors}`
                                                                     : `Pastor(a): ${item.data.pastors}`}
                                                             </span>
                                                         )}
                                                         {item.data.leaders && (
                                                             <span className="telao__congress-detail">
-                                                                👥 {item.data.leaders.includes(',') || item.data.leaders.includes('e ')
+                                                                👥 {item.data.leaders.includes(',') || item.data.leaders.includes(' e ')
                                                                     ? `Líderes: ${item.data.leaders}`
                                                                     : `Líder: ${item.data.leaders}`}
                                                             </span>

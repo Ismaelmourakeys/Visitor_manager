@@ -6,6 +6,7 @@ import { useVisitors } from './hooks/useVisitors';
 import { useChurchProfile } from './hooks/useChurchProfile';
 import { useNotifications } from './hooks/useNotifications';
 import { useCongresses } from './hooks/useCongresses';
+import { useDirectorMode } from './hooks/useDirectorMode';
 import { Sidebar } from './components/layout/Sidebar';
 import { RegistrationForm } from './pages/RegistrationForm/RegistrationForm';
 import { AdminDashboard } from './pages/AdminDashboard/AdminDashboard';
@@ -38,6 +39,17 @@ function App() {
     markAllRead, markAllUnread,
     toggleRead, markAsRead, dismissToast,
   } = useNotifications(visitors, congresses, visitorsLoading, user?.uid);
+
+  // ← Director mode compartilhado entre Telão e Modo Dirigente
+  const {
+    presentedVisitorIds,
+    presentedCongressIds,
+    playedCongressIds,
+    toggleVisitor,
+    toggleCongress,
+    togglePlayed,
+    resetSession,
+  } = useDirectorMode(user?.uid);
 
   const [telaoOpen, setTelaoOpen] = useState(false);
   const [directorOpen, setDirectorOpen] = useState(false);
@@ -77,7 +89,6 @@ function App() {
   }
 
   if (!user) return <Login startWithRegister={startWithRegister} />;
-
   if (!church) return <ChurchProfile user={user} onComplete={refresh} />;
 
   return (
@@ -137,6 +148,8 @@ function App() {
           visitors={visitors}
           congresses={congresses}
           church={church}
+          presentedVisitorIds={presentedVisitorIds}
+          presentedCongressIds={presentedCongressIds}
           onClose={() => setTelaoOpen(false)}
         />
       )}
@@ -147,6 +160,13 @@ function App() {
           congresses={congresses}
           church={church}
           churchId={user.uid}
+          presentedVisitorIds={presentedVisitorIds}
+          presentedCongressIds={presentedCongressIds}
+          playedCongressIds={playedCongressIds}
+          onToggleVisitor={toggleVisitor}
+          onToggleCongress={toggleCongress}
+          onTogglePlayed={togglePlayed}
+          onReset={resetSession}
           onClose={() => setDirectorOpen(false)}
         />
       )}

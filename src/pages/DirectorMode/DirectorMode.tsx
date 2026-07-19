@@ -3,7 +3,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { Visitor } from '../../types/visitor';
 import type { Congress } from '../../types/congress';
 import type { ChurchData } from '../../hooks/useChurchProfile';
-import { useDirectorMode } from '../../hooks/useDirectorMode';
 import './DirectorMode.css';
 
 interface DirectorModeProps {
@@ -11,22 +10,27 @@ interface DirectorModeProps {
     congresses: Congress[];
     church: ChurchData;
     churchId: string;
+    presentedVisitorIds: Set<string>;
+    presentedCongressIds: Set<string>;
+    playedCongressIds: Set<string>;
+    onToggleVisitor: (id: string) => void;
+    onToggleCongress: (id: string) => void;
+    onTogglePlayed: (id: string) => void;
+    onReset: () => void;
     onClose: () => void;
 }
 
 type DirectorTab = 'all' | 'visitors' | 'congresses';
 
 export function DirectorMode({
-    visitors, congresses, church, churchId, onClose,
+    visitors, congresses, church,
+    presentedVisitorIds, presentedCongressIds, playedCongressIds,
+    onToggleVisitor, onToggleCongress, onTogglePlayed,
+    onReset, onClose,
 }: DirectorModeProps) {
     const today = new Date().toISOString().split('T')[0];
     const todayVisitors = visitors.filter(v => v.visitDate === today);
     const todayCongresses = congresses.filter(c => c.date === today);
-
-    const {
-        presentedVisitorIds, presentedCongressIds, playedCongressIds,
-        loading, toggleVisitor, toggleCongress, togglePlayed, resetSession,
-    } = useDirectorMode(churchId);
 
     const [activeTab, setActiveTab] = useState<DirectorTab>('all');
     const [showResetConfirm, setShowResetConfirm] = useState(false);
@@ -39,7 +43,6 @@ export function DirectorMode({
         return () => window.removeEventListener('keydown', handleKey);
     }, [onClose]);
 
-    // Contadores de progresso
     const visitorsPresented = todayVisitors.filter(v => presentedVisitorIds.has(v.id)).length;
     const congressesPresented = todayCongresses.filter(c => presentedCongressIds.has(c.id)).length;
     const congressesPlayed = todayCongresses.filter(c => playedCongressIds.has(c.id)).length;
@@ -48,7 +51,7 @@ export function DirectorMode({
 
     return (
         <div className="director">
-            {/* Header fixo */}
+            {/* Header */}
             <div className="director__header">
                 <div className="director__header-left">
                     {church.logoUrl && (
@@ -64,7 +67,6 @@ export function DirectorMode({
                     </div>
                 </div>
 
-                {/* Progresso geral */}
                 <div className="director__progress">
                     <div className="director__progress-bar">
                         <div
@@ -78,10 +80,7 @@ export function DirectorMode({
                 </div>
 
                 <div className="director__header-actions">
-                    <button
-                        className="director__reset-btn"
-                        onClick={() => setShowResetConfirm(true)}
-                    >
+                    <button className="director__reset-btn" onClick={() => setShowResetConfirm(true)}>
                         🔄 Reiniciar
                     </button>
                     <button className="director__close-btn" onClick={onClose}>
@@ -108,29 +107,33 @@ export function DirectorMode({
                 ))}
             </div>
 
-            {/* Resumo rápido */}
+            {/* Resumo */}
             <div className="director__summary">
                 <div className="director__summary-item">
-                    <span className="director__summary-value">{visitorsPresented}/{todayVisitors.length}</span>
+                    <span className="director__summary-value">
+                        {visitorsPresented}/{todayVisitors.length}
+                    </span>
                     <span className="director__summary-label">Visitantes apresentados</span>
                 </div>
                 <div className="director__summary-divider" />
                 <div className="director__summary-item">
-                    <span className="director__summary-value">{congressesPresented}/{todayCongresses.length}</span>
+                    <span className="director__summary-value">
+                        {congressesPresented}/{todayCongresses.length}
+                    </span>
                     <span className="director__summary-label">Igrejas apresentadas</span>
                 </div>
                 <div className="director__summary-divider" />
                 <div className="director__summary-item">
-                    <span className="director__summary-value">{congressesPlayed}/{todayCongresses.length}</span>
+                    <span className="director__summary-value">
+                        {congressesPlayed}/{todayCongresses.length}
+                    </span>
                     <span className="director__summary-label">Grupos que cantaram</span>
                 </div>
             </div>
 
             {/* Lista */}
             <div className="director__list">
-                {loading ? (
-                    <div className="director__empty">Carregando...</div>
-                ) : total === 0 ? (
+                {total === 0 ? (
                     <div className="director__empty">
                         <span>📋</span>
                         <p>Nenhum registro para hoje ainda.</p>
@@ -139,94 +142,98 @@ export function DirectorMode({
                 ) : (
                     <>
                         {/* Visitantes */}
-                        {(activeTab === 'all' || activeTab === 'visitors') && todayVisitors.map((visitor, index) => {
-                            const isPresented = presentedVisitorIds.has(visitor.id);
-                            return (
-                                <motion.div
-                                    key={`v-${visitor.id}`}
-                                    className={`director__item ${isPresented ? 'director__item--done' : ''}`}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: index * 0.03 }}
-                                >
-                                    <div className="director__item-order">{index + 1}</div>
-                                    <div className="director__item-info">
-                                        <span className="director__item-badge director__item-badge--visitor">
-                                            👤 Visitante
-                                        </span>
-                                        <strong className="director__item-name">
-                                            {visitor.position
-                                                ? `${visitor.position} ${visitor.fullName}`
-                                                : visitor.fullName}
-                                        </strong>
-                                        {visitor.howFound && (
-                                            <span className="director__item-detail">
-                                                Como conheceu: {visitor.howFound}
-                                            </span>
-                                        )}
-                                    </div>
-                                    <button
-                                        className={`director__check-btn ${isPresented ? 'director__check-btn--done' : ''}`}
-                                        onClick={() => toggleVisitor(visitor.id)}
+                        {(activeTab === 'all' || activeTab === 'visitors') &&
+                            todayVisitors.map((visitor, index) => {
+                                const isPresented = presentedVisitorIds.has(visitor.id);
+                                return (
+                                    <motion.div
+                                        key={`v-${visitor.id}`}
+                                        className={`director__item ${isPresented ? 'director__item--done' : ''}`}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: index * 0.03 }}
                                     >
-                                        {isPresented ? '✅ Apresentado' : '⬜ Apresentar'}
-                                    </button>
-                                </motion.div>
-                            );
-                        })}
-
-                        {/* Congressos */}
-                        {(activeTab === 'all' || activeTab === 'congresses') && todayCongresses.map((congress, index) => {
-                            const isPresented = presentedCongressIds.has(congress.id);
-                            const isPlayed = playedCongressIds.has(congress.id);
-                            const offset = activeTab === 'all' ? todayVisitors.length + index : index;
-                            return (
-                                <motion.div
-                                    key={`c-${congress.id}`}
-                                    className={`director__item ${isPresented ? 'director__item--done' : ''}`}
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    transition={{ delay: offset * 0.03 }}
-                                >
-                                    <div className="director__item-order">{offset + 1}</div>
-                                    <div className="director__item-info">
-                                        <span className="director__item-badge director__item-badge--congress">
-                                            ⛪ {congress.congressType}
-                                        </span>
-                                        <strong className="director__item-name">{congress.churchName}</strong>
-                                        <span className="director__item-detail">{congress.groupName}</span>
-                                        {congress.pastors && (
-                                            <span className="director__item-detail">🙏 {congress.pastors}</span>
-                                        )}
-                                        {congress.leaders && (
-                                            <span className="director__item-detail">👥 {congress.leaders}</span>
-                                        )}
-                                        {congress.worship && (
-                                            <span className="director__item-detail">🎵 {congress.worship}</span>
-                                        )}
-                                    </div>
-                                    <div className="director__item-actions">
+                                        <div className="director__item-order">{index + 1}</div>
+                                        <div className="director__item-info">
+                                            <span className="director__item-badge director__item-badge--visitor">
+                                                👤 Visitante
+                                            </span>
+                                            <strong className="director__item-name">
+                                                {visitor.position
+                                                    ? `${visitor.position} ${visitor.fullName}`
+                                                    : visitor.fullName}
+                                            </strong>
+                                            {visitor.howFound && (
+                                                <span className="director__item-detail">
+                                                    Como conheceu: {visitor.howFound}
+                                                </span>
+                                            )}
+                                        </div>
                                         <button
                                             className={`director__check-btn ${isPresented ? 'director__check-btn--done' : ''}`}
-                                            onClick={() => toggleCongress(congress.id)}
+                                            onClick={() => onToggleVisitor(visitor.id)}
                                         >
                                             {isPresented ? '✅ Apresentado' : '⬜ Apresentar'}
                                         </button>
-                                        <button
-                                            className={`director__play-btn ${isPlayed ? 'director__play-btn--done' : ''}`}
-                                            onClick={() => togglePlayed(congress.id)}
-                                        >
-                                            {isPlayed ? '🎵 Cantou' : '▶ Cantar'}
-                                        </button>
-                                    </div>
-                                </motion.div>
-                            );
-                        })}
+                                    </motion.div>
+                                );
+                            })
+                        }
+
+                        {/* Congressos */}
+                        {(activeTab === 'all' || activeTab === 'congresses') &&
+                            todayCongresses.map((congress, index) => {
+                                const isPresented = presentedCongressIds.has(congress.id);
+                                const isPlayed = playedCongressIds.has(congress.id);
+                                const offset = activeTab === 'all' ? todayVisitors.length + index : index;
+                                return (
+                                    <motion.div
+                                        key={`c-${congress.id}`}
+                                        className={`director__item ${isPresented ? 'director__item--done' : ''}`}
+                                        initial={{ opacity: 0, x: -20 }}
+                                        animate={{ opacity: 1, x: 0 }}
+                                        transition={{ delay: offset * 0.03 }}
+                                    >
+                                        <div className="director__item-order">{offset + 1}</div>
+                                        <div className="director__item-info">
+                                            <span className="director__item-badge director__item-badge--congress">
+                                                ⛪ {congress.congressType}
+                                            </span>
+                                            <strong className="director__item-name">{congress.churchName}</strong>
+                                            <span className="director__item-detail">{congress.groupName}</span>
+                                            {congress.pastors && (
+                                                <span className="director__item-detail">🙏 {congress.pastors}</span>
+                                            )}
+                                            {congress.leaders && (
+                                                <span className="director__item-detail">👥 {congress.leaders}</span>
+                                            )}
+                                            {congress.worship && (
+                                                <span className="director__item-detail">🎵 {congress.worship}</span>
+                                            )}
+                                        </div>
+                                        <div className="director__item-actions">
+                                            <button
+                                                className={`director__check-btn ${isPresented ? 'director__check-btn--done' : ''}`}
+                                                onClick={() => onToggleCongress(congress.id)}
+                                            >
+                                                {isPresented ? '✅ Apresentado' : '⬜ Apresentar'}
+                                            </button>
+                                            <button
+                                                className={`director__play-btn ${isPlayed ? 'director__play-btn--done' : ''}`}
+                                                onClick={() => onTogglePlayed(congress.id)}
+                                            >
+                                                {isPlayed ? '🎵 Cantou' : '▶ Cantar'}
+                                            </button>
+                                        </div>
+                                    </motion.div>
+                                );
+                            })
+                        }
                     </>
                 )}
             </div>
 
-            {/* Modal de confirmação de reset */}
+            {/* Modal de reset */}
             <AnimatePresence>
                 {showResetConfirm && (
                     <motion.div
@@ -242,13 +249,16 @@ export function DirectorMode({
                             exit={{ scale: 0.9, opacity: 0 }}
                         >
                             <h3>Reiniciar sessão?</h3>
-                            <p>Todas as marcações de "apresentado" e "cantou" serão removidas em todos os dispositivos.</p>
+                            <p>
+                                Todas as marcações de "apresentado" e "cantou" serão removidas
+                                em todos os dispositivos e os nomes voltarão ao telão.
+                            </p>
                             <div className="director__reset-actions">
                                 <button onClick={() => setShowResetConfirm(false)}>Cancelar</button>
                                 <button
                                     className="director__reset-confirm"
                                     onClick={async () => {
-                                        await resetSession();
+                                        await onReset();
                                         setShowResetConfirm(false);
                                     }}
                                 >
