@@ -2,8 +2,8 @@ import type { ChurchData } from '../../hooks/useChurchProfile';
 import './Sidebar.css';
 
 interface SidebarProps {
-  activePage: 'form' | 'dashboard' | 'settings';
-  onNavigate: (page: 'form' | 'dashboard' | 'settings') => void;
+  activePage: 'form' | 'dashboard' | 'settings' | 'congress';
+  onNavigate: (page: 'form' | 'dashboard' | 'settings' | 'congress') => void;
   onLogout: () => void;
   church: ChurchData;
 }
@@ -42,7 +42,7 @@ export function Sidebar({ activePage, onNavigate, onLogout, church }: SidebarPro
         + Novo Visitante
       </button>
 
-      {/* Nav — aparece no mobile e desktop */}
+      {/* Nav */}
       <nav className="sidebar__nav">
         <button
           className={`sidebar__nav-item ${activePage === 'dashboard' ? 'sidebar__nav-item--active' : ''}`}
@@ -57,17 +57,23 @@ export function Sidebar({ activePage, onNavigate, onLogout, church }: SidebarPro
           <span>📋</span> Cadastrar
         </button>
         <button
+          className={`sidebar__nav-item ${activePage === 'congress' ? 'sidebar__nav-item--active' : ''}`}
+          onClick={() => onNavigate('congress')}
+        >
+          <span>⛪</span> Congressos
+        </button>
+        <button
           className={`sidebar__nav-item ${activePage === 'settings' ? 'sidebar__nav-item--active' : ''}`}
           onClick={() => onNavigate('settings')}
         >
           <span>⚙️</span> Config
         </button>
-        <button
+        {/* <button
           className="sidebar__nav-item sidebar__nav-item--logout"
           onClick={onLogout}
         >
           <span>❌</span> Sair
-        </button>
+        </button> */}
       </nav>
 
       {/* Footer — só desktop */}
@@ -89,14 +95,14 @@ export function Sidebar({ activePage, onNavigate, onLogout, church }: SidebarPro
             onClick={() => onNavigate('settings')}
             title="Configurações"
           >
-            ⚙
+            ⚙ <span className="sidebar__btn-label"></span>
           </button>
           <button
             className="sidebar__logout"
             onClick={onLogout}
             title="Sair"
           >
-            ❌
+            ❌ <span className="sidebar__btn-label"></span>
           </button>
         </div>
       </div>

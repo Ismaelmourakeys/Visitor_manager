@@ -44,9 +44,11 @@ export function Notifications({
     }
 
     function handleViewVisitor(n: Notification) {
-        onMarkAsRead(n.id); // marca como lido ao abrir
-        onViewVisitor(n.visitor);
-        onTogglePanel();
+        onMarkAsRead(n.id);
+        if (n.kind === 'visitor' && n.visitor) {
+            onViewVisitor(n.visitor);
+            onTogglePanel();
+        }
     }
 
     const allRead = notifications.length > 0 && notifications.every(n => n.read);
@@ -65,21 +67,31 @@ export function Notifications({
                             exit={{ opacity: 0, x: 80 }}
                             transition={{ duration: 0.3 }}
                         >
-                            <div className="toast__icon">🙏</div>
+                            <div className="toast__icon">
+                                {toast.kind === 'visitor' ? '🙏' : '⛪'}
+                            </div>
                             <div className="toast__content">
-                                <strong>Novo visitante!</strong>
-                                <span>{toast.visitor.fullName}</span>
+                                <strong>
+                                    {toast.kind === 'visitor' ? 'Novo visitante!' : 'Novo grupo!'}
+                                </strong>
+                                <span>
+                                    {toast.kind === 'visitor'
+                                        ? toast.visitor?.fullName
+                                        : `${toast.congress?.churchName} — ${toast.congress?.groupName}`}
+                                </span>
                             </div>
                             <div className="toast__actions">
-                                <button
-                                    className="toast__view"
-                                    onClick={() => {
-                                        onViewVisitor(toast.visitor);
-                                        onDismissToast(toast.id);
-                                    }}
-                                >
-                                    Ver
-                                </button>
+                                {toast.kind === 'visitor' && toast.visitor && (
+                                    <button
+                                        className="toast__view"
+                                        onClick={() => {
+                                            onViewVisitor(toast.visitor!);
+                                            onDismissToast(toast.id);
+                                        }}
+                                    >
+                                        Ver
+                                    </button>
+                                )}
                                 <button
                                     className="toast__close"
                                     onClick={() => onDismissToast(toast.id)}
@@ -111,7 +123,12 @@ export function Notifications({
                             transition={{ duration: 0.2 }}
                         >
                             <div className="notif__header">
-                                <span>Notificações {unreadCount > 0 && <span className="notif__header-count">{unreadCount}</span>}</span>
+                                <span>
+                                    Notificações{' '}
+                                    {unreadCount > 0 && (
+                                        <span className="notif__header-count">{unreadCount}</span>
+                                    )}
+                                </span>
                                 <div className="notif__header-actions">
                                     {notifications.length > 0 && (
                                         allRead ? (
@@ -143,19 +160,31 @@ export function Notifications({
                                                 className="notif__item-main"
                                                 onClick={() => handleViewVisitor(n)}
                                             >
-                                                <div className="notif__item-icon">🙏</div>
+                                                <div className="notif__item-icon">
+                                                    {n.kind === 'visitor' ? '🙏' : '⛪'}
+                                                </div>
                                                 <div className="notif__item-content">
-                                                    <strong>{n.visitor.fullName}</strong>
-                                                    <span>
-                                                        {n.visitor.position ? `${n.visitor.position} • ` : ''}
-                                                        {n.visitor.visitedTimes || 'Nova visita'}
-                                                    </span>
+                                                    {n.kind === 'visitor' ? (
+                                                        <>
+                                                            <strong>{n.visitor?.fullName}</strong>
+                                                            <span>
+                                                                {n.visitor?.position ? `${n.visitor.position} • ` : ''}
+                                                                {n.visitor?.visitedTimes || 'Nova visita'}
+                                                            </span>
+                                                        </>
+                                                    ) : (
+                                                        <>
+                                                            <strong>{n.congress?.churchName}</strong>
+                                                            <span>
+                                                                {n.congress?.congressType} • {n.congress?.groupName}
+                                                            </span>
+                                                        </>
+                                                    )}
                                                     <time>{formatTime(n.timestamp)}</time>
                                                 </div>
                                                 {!n.read && <div className="notif__item-dot" />}
                                             </div>
 
-                                            {/* Menu de ações */}
                                             <div className="notif__item-menu">
                                                 <button
                                                     className="notif__item-menu-btn"
@@ -175,14 +204,16 @@ export function Notifications({
                                                             exit={{ opacity: 0, scale: 0.9 }}
                                                             transition={{ duration: 0.15 }}
                                                         >
-                                                            <button
-                                                                onClick={() => {
-                                                                    handleViewVisitor(n);
-                                                                    setMenuOpenId(null);
-                                                                }}
-                                                            >
-                                                                👁 Ver detalhes
-                                                            </button>
+                                                            {n.kind === 'visitor' && (
+                                                                <button
+                                                                    onClick={() => {
+                                                                        handleViewVisitor(n);
+                                                                        setMenuOpenId(null);
+                                                                    }}
+                                                                >
+                                                                    👁 Ver detalhes
+                                                                </button>
+                                                            )}
                                                             <button
                                                                 onClick={() => {
                                                                     onToggleRead(n.id);

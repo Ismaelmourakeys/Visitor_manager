@@ -1,4 +1,9 @@
-/* Mobile first */
+/* ═══════════════════════════════════════════════════════
+   ADMIN DASHBOARD — CSS
+   Mobile first: estilos base → depois @media min-width
+═══════════════════════════════════════════════════════ */
+
+/* ─── Layout principal ─────────────────────────────── */
 .dashboard {
   width: 100%;
   padding: 16px;
@@ -7,13 +12,21 @@
   gap: 16px;
 }
 
-/* Header */
+/* ─── Header ────────────────────────────────────────── */
 .dashboard__header {
   display: flex;
   flex-direction: column;
   gap: 12px;
 }
 
+/* Botões de modo (Telão + Dirigente) */
+.dashboard__header-btns {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Botão Telão */
 .dashboard__telao-btn {
   background: #2d6a4f;
   color: #fff;
@@ -26,10 +39,39 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  white-space: nowrap;
 }
 
 .dashboard__telao-btn:hover {
   background: #1b4332;
+}
+
+/* Botão Dirigente */
+.dashboard__director-btn {
+  background: #2d6a4f;
+  color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dashboard__director-btn:hover {
+  background: #1b4332;
+}
+
+/* Botão Dirigente e telão ficam em coluna */
+.dashboard__header-btns {
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Grupo de título + subtítulo */
+.dashboard__title-group {
+  flex: 1;
 }
 
 .dashboard__title {
@@ -44,12 +86,14 @@
   color: #6b7280;
 }
 
+/* Área de busca + notificações */
 .dashboard__header-actions {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
+/* Campo de busca */
 .dashboard__search-wrap {
   position: relative;
   flex: 1;
@@ -72,13 +116,104 @@
   font-size: 13px;
   outline: none;
   background: #fff;
-  color: #000;
+  color: #1a1a1a;
+  font-family: inherit;
 }
 
 .dashboard__search:focus {
   border-color: #2d6a4f;
 }
 
+/* ─── Barra de abas + filtros ───────────────────────── */
+.dashboard__toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Abas: Todos / Visitantes / Grupos */
+.dashboard__tabs {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.dashboard__tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #6b7280;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.dashboard__tab--active {
+  background: #f0fdf4;
+  color: #2d6a4f;
+  font-weight: 600;
+}
+
+.dashboard__tab:hover:not(.dashboard__tab--active) {
+  background: #f5f5f5;
+  color: #374151;
+}
+
+/* Contador numérico dentro das abas */
+.dashboard__tab-count {
+  background: #e5e7eb;
+  color: #374151;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.dashboard__tab--active .dashboard__tab-count {
+  background: #bbf7d0;
+  color: #065f46;
+}
+
+/* Área de ações da toolbar */
+.dashboard__toolbar-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* Botão outline padrão */
+.dashboard__outline-btn {
+  background: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  color: #374151;
+}
+
+.dashboard__outline-btn:hover {
+  background: #f9fafb;
+}
+
+.dashboard__outline-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Estado ativo do botão Filtros */
+.dashboard__outline-btn--active {
+  background: #f0fdf4;
+  border-color: #2d6a4f;
+  color: #2d6a4f;
+  font-weight: 600;
+}
+
+/* ─── Painel de filtros ─────────────────────────────── */
 .dashboard__filters {
   background: #fff;
   border-radius: 12px;
@@ -124,6 +259,7 @@
   border-color: #2d6a4f;
 }
 
+/* Botão de limpar filtros */
 .dashboard__filter-clear {
   margin-top: 14px;
   background: none;
@@ -139,102 +275,7 @@
   background: #fef2f2;
 }
 
-.dashboard__outline-btn--active {
-  background: #f0fdf4;
-  border-color: #2d6a4f;
-  color: #2d6a4f;
-  font-weight: 600;
-}
-
-@media (max-width: 640px) {
-  .dashboard__filters-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-.dashboard__icon-btn {
-  background: none;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 8px 10px;
-  cursor: pointer;
-  font-size: 14px;
-  background: #fff;
-}
-
-/* Toolbar */
-.dashboard__toolbar {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.dashboard__tabs {
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-}
-
-.dashboard__tab {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: none;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 8px;
-  font-size: 13px;
-  color: #6b7280;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.dashboard__tab--active {
-  background: #f0fdf4;
-  color: #2d6a4f;
-  font-weight: 600;
-}
-
-.dashboard__tab:hover:not(.dashboard__tab--active) {
-  background: #f5f5f5;
-  color: #374151;
-}
-
-.dashboard__tab-count {
-  background: #e5e7eb;
-  color: #374151;
-  padding: 1px 7px;
-  border-radius: 999px;
-  font-size: 11px;
-  font-weight: 600;
-}
-
-.dashboard__tab--active .dashboard__tab-count {
-  background: #bbf7d0;
-  color: #065f46;
-}
-
-.dashboard__toolbar-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.dashboard__outline-btn {
-  background: #fff;
-  border: 1px solid #2d6a4f;
-  border-radius: 8px;
-  padding: 7px 14px;
-  font-size: 13px;
-  cursor: pointer;
-  color: #374151;
-}
-
-.dashboard__outline-btn:hover {
-  background: #f9fafb;
-}
-
-/* Lista */
+/* ─── Lista de registros ────────────────────────────── */
 .dashboard__list {
   background: #fff;
   border-radius: 12px;
@@ -242,6 +283,7 @@
   overflow: hidden;
 }
 
+/* Estado vazio */
 .dashboard__empty {
   display: flex;
   flex-direction: column;
@@ -261,80 +303,7 @@
   font-size: 13px;
 }
 
-/* Paginação */
-.dashboard__pagination {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-}
-
-.dashboard__pagination-info {
-  font-size: 13px;
-  color: #6b7280;
-}
-
-.dashboard__pages {
-  display: flex;
-  gap: 4px;
-}
-
-.dashboard__page-btn {
-  width: 32px;
-  height: 32px;
-  border: 1px solid #d1d5db;
-  background: #fff;
-  border-radius: 6px;
-  font-size: 13px;
-  cursor: pointer;
-  color: #374151;
-}
-
-.dashboard__page-btn--active {
-  background: #2d6a4f;
-  border-color: #2d6a4f;
-  color: #fff;
-  font-weight: 600;
-}
-
-.dashboard__page-btn:hover:not(.dashboard__page-btn--active) {
-  background: #f5f5f5;
-}
-
-/* Desktop */
-@media (min-width: 768px) {
-  .dashboard {
-    padding: 32px;
-    gap: 20px;
-  }
-
-  .dashboard__header {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .dashboard__search-wrap {
-    width: 240px;
-    flex: unset;
-  }
-
-  .dashboard__toolbar {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
-
-  .dashboard__title {
-    font-size: 24px;
-  }
-
-  .dashboard__pagination {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-}
-
+/* ─── Tela de boas-vindas ───────────────────────────── */
 .dashboard__welcome {
   display: flex;
   flex-direction: column;
@@ -368,6 +337,7 @@
   color: #6b7280;
 }
 
+/* Passos de instrução */
 .dashboard__welcome-steps {
   display: flex;
   flex-direction: column;
@@ -412,4 +382,336 @@
   font-size: 13px;
   color: #6b7280;
   margin: 0;
+}
+
+/* ─── Paginação ─────────────────────────────────────── */
+.dashboard__pagination {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashboard__pagination-info {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* ─── Card de congresso/grupo ───────────────────────── */
+.congress-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #fff;
+  border-bottom: 1px solid #f0f0f0;
+  flex-wrap: wrap;
+}
+
+.congress-card:last-child {
+  border-bottom: none;
+}
+
+.congress-card:hover {
+  background: #fafafa;
+}
+
+/* Coluna esquerda: tipo + nome */
+.congress-card__left {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 160px;
+  flex: 1;
+}
+
+/* Badge colorida de tipo */
+.congress-card__type {
+  display: inline-flex;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  width: fit-content;
+}
+
+.congress-card__names strong {
+  display: block;
+  font-size: 14px;
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.congress-card__names span {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+/* Coluna central: pastor, líderes, louvor */
+.congress-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 2;
+}
+
+.congress-card__meta-item {
+  display: flex;
+  flex-direction: column;
+  font-size: 13px;
+  color: #374151;
+}
+
+.congress-card__meta-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #9ca3af;
+  letter-spacing: 0.05em;
+}
+
+/* Coluna direita: ações */
+.congress-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+/* Botão editar */
+.congress-card__edit-btn {
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.congress-card__edit-btn:hover {
+  background: #f9fafb;
+}
+
+/* Botão excluir */
+.congress-card__delete {
+  background: none;
+  border: 1px solid #fecaca;
+  color: #dc2626;
+  border-radius: 8px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.congress-card__delete:hover {
+  background: #fef2f2;
+}
+
+/* Confirmação de exclusão inline */
+.congress-card__confirm {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #374151;
+}
+
+.congress-card__confirm button {
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: inherit;
+}
+
+.congress-card__confirm-yes {
+  background: #dc2626 !important;
+  color: #fff !important;
+  border-color: #dc2626 !important;
+}
+
+/* ─── Modo edição inline do card ────────────────────── */
+.congress-card__edit {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.congress-card__edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.congress-card__edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.congress-card__edit-field label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #9ca3af;
+  text-transform: uppercase;
+}
+
+.congress-card__edit-field input,
+.congress-card__edit-field select {
+  padding: 7px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+  font-family: inherit;
+  color: #1a1a1a;
+  background: #fff;
+}
+
+.congress-card__edit-field input:focus,
+.congress-card__edit-field select:focus {
+  border-color: #2d6a4f;
+}
+
+/* Botões salvar/cancelar */
+.congress-card__edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.congress-card__edit-actions button {
+  padding: 7px 16px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  cursor: pointer;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.congress-card__edit-save {
+  background: #2d6a4f !important;
+  color: #fff !important;
+  border-color: #2d6a4f !important;
+  font-weight: 600 !important;
+}
+
+/* ─── Mobile (até 767px) ────────────────────────────── */
+@media (max-width: 767px) {
+
+  /* Filtros em coluna única */
+  .dashboard__filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Card de congresso em coluna */
+  .congress-card {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .congress-card__meta {
+    width: 100%;
+  }
+
+  .congress-card__actions {
+    margin-left: 0;
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* Botões maiores pra toque */
+  .congress-card__edit-btn,
+  .congress-card__delete {
+    padding: 10px 16px;
+    font-size: 16px;
+  }
+
+  /* Confirmação em wrap */
+  .congress-card__confirm {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .congress-card__confirm button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  /* Edição em coluna única */
+  .congress-card__edit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Inputs maiores — evita zoom no iOS */
+  .congress-card__edit-field input,
+  .congress-card__edit-field select {
+    padding: 12px 14px;
+    font-size: 16px;
+    height: 48px;
+  }
+
+  .congress-card__edit-field label {
+    font-size: 12px;
+  }
+
+  /* Botões em coluna */
+  .congress-card__edit-actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .congress-card__edit-actions button {
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .congress-card__edit {
+    gap: 16px;
+  }
+}
+
+/* ─── Desktop (768px+) ──────────────────────────────── */
+@media (min-width: 768px) {
+
+  .dashboard {
+    padding: 32px;
+    gap: 20px;
+  }
+
+  /* Header em linha horizontal */
+  .dashboard__header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* Campo de busca com largura fixa */
+  .dashboard__search-wrap {
+    width: 240px;
+    flex: unset;
+  }
+
+  /* Toolbar em linha */
+  .dashboard__toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .dashboard__title {
+    font-size: 24px;
+  }
+
+  /* Paginação em linha */
+  .dashboard__pagination {
+    flex-direction: row;
+    justify-content: space-between;
+  }
 }

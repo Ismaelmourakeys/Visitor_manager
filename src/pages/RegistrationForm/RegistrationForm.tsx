@@ -88,8 +88,8 @@ export function RegistrationForm({ onSubmit, church }: RegistrationFormProps) {
         <div className="reg-form__body">
           <luster-input
             ref={fullName.ref}
-            label="Nome + Sobrenome / ou Nome do Grupo *"
-            placeholder="ex: Maria Silva / Grupo Filhas do Rei"
+            label="Nome + Sobrenome "
+            placeholder="ex: Maria Silva"
           ></luster-input>
 
           <div className="reg-form__row">

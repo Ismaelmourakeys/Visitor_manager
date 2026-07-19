@@ -5,18 +5,21 @@ import { useAuth } from './contexts/AuthContext';
 import { useVisitors } from './hooks/useVisitors';
 import { useChurchProfile } from './hooks/useChurchProfile';
 import { useNotifications } from './hooks/useNotifications';
+import { useCongresses } from './hooks/useCongresses';
 import { Sidebar } from './components/layout/Sidebar';
 import { RegistrationForm } from './pages/RegistrationForm/RegistrationForm';
 import { AdminDashboard } from './pages/AdminDashboard/AdminDashboard';
+import { CongressForm } from './pages/CongressForm/CongressForm';
 import { Login } from './pages/Login/Login';
 import { ChurchProfile } from './pages/ChurchProfile/ChurchProfile';
 import { Settings } from './pages/Settings/Settings';
 import { Telao } from './pages/Telao/Telao';
 import { Landing } from './pages/Landing/Landing';
+import { DirectorMode } from './pages/DirectorMode/DirectorMode';
 import type { Visitor, VisitorStatus } from './types/visitor';
 import './App.css';
 
-type Page = 'form' | 'dashboard' | 'settings';
+type Page = 'form' | 'dashboard' | 'settings' | 'congress';
 
 function getStatusByVisits(visitedTimes: string | undefined): VisitorStatus {
   if (visitedTimes === '3 vezes ou mais') return 'Regular';
@@ -28,14 +31,16 @@ function App() {
   const { user, loading: authLoading } = useAuth();
   const { church, loading: churchLoading, refresh } = useChurchProfile(user?.uid);
   const { visitors, loading: visitorsLoading, addVisitor } = useVisitors(user?.uid);
+  const { congresses, addCongress, deleteCongress, updateCongress } = useCongresses(user?.uid);
 
   const {
-  notifications, toasts, unreadCount,
-  markAllRead, markAllUnread,
-  toggleRead, markAsRead, dismissToast,
-} = useNotifications(visitors, visitorsLoading, user?.uid);
+    notifications, toasts, unreadCount,
+    markAllRead, markAllUnread,
+    toggleRead, markAsRead, dismissToast,
+  } = useNotifications(visitors, congresses, visitorsLoading, user?.uid);
 
   const [telaoOpen, setTelaoOpen] = useState(false);
+  const [directorOpen, setDirectorOpen] = useState(false);
   const [showNotifPanel, setShowNotifPanel] = useState(false);
   const [showLanding, setShowLanding] = useState(true);
   const [startWithRegister, setStartWithRegister] = useState(false);
@@ -50,76 +55,55 @@ function App() {
     setActivePage('dashboard');
   }
 
-  // 1. Carregando
   if (authLoading || churchLoading) {
     return (
       <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: '#0f1923',
-        color: 'rgba(255,255,255,0.5)',
-        fontSize: '14px',
+        minHeight: '100vh', display: 'flex', alignItems: 'center',
+        justifyContent: 'center', background: '#0f1923',
+        color: 'rgba(255,255,255,0.5)', fontSize: '14px',
       }}>
         Carregando...
       </div>
     );
   }
 
-  // 2. Landing page — só aparece se não estiver logado e showLanding for true
   if (!user && showLanding) {
     return (
       <Landing
-        onLogin={() => {
-          setStartWithRegister(false);
-          setShowLanding(false);
-        }}
-        onRegister={() => {
-          setStartWithRegister(true);
-          setShowLanding(false);
-        }}
+        onLogin={() => { setStartWithRegister(false); setShowLanding(false); }}
+        onRegister={() => { setStartWithRegister(true); setShowLanding(false); }}
       />
     );
   }
 
-  // 3. Tela de login/cadastro
-  if (!user) {
-    return <Login startWithRegister={startWithRegister} />;
-  }
+  if (!user) return <Login startWithRegister={startWithRegister} />;
 
-  // 4. Perfil da igreja — primeiro acesso
-  if (!church) {
-    return <ChurchProfile user={user} onComplete={refresh} />;
-  }
+  if (!church) return <ChurchProfile user={user} onComplete={refresh} />;
 
-  // 5. App completo
   return (
     <>
       <div className="app-layout">
         <Sidebar
           activePage={activePage}
           onNavigate={setActivePage}
-          onLogout={() => {
-            signOut(auth);
-            setShowLanding(true); // volta pra landing ao sair
-          }}
+          onLogout={() => { signOut(auth); setShowLanding(true); }}
           church={church}
         />
         <main className="app-content">
           {activePage === 'form' && (
-            <RegistrationForm
-              onSubmit={handleNewVisitor}
-              church={church}
-            />
+            <RegistrationForm onSubmit={handleNewVisitor} church={church} />
           )}
           {activePage === 'dashboard' && (
             <AdminDashboard
               visitors={visitors}
+              congresses={congresses}
               loading={visitorsLoading}
               church={church}
               churchId={user.uid}
               onTelao={() => setTelaoOpen(true)}
+              onDirector={() => setDirectorOpen(true)}
+              onDeleteCongress={deleteCongress}
+              onUpdateCongress={updateCongress}
               notifications={notifications}
               toasts={toasts}
               unreadCount={unreadCount}
@@ -132,12 +116,18 @@ function App() {
               onDismissToast={dismissToast}
             />
           )}
+          {activePage === 'congress' && (
+            <div className="congress-page">
+              <CongressForm
+                onSubmit={async (congress) => {
+                  await addCongress(congress);
+                  setActivePage('dashboard');
+                }}
+              />
+            </div>
+          )}
           {activePage === 'settings' && (
-            <Settings
-              user={user}
-              church={church}
-              onSave={refresh}
-            />
+            <Settings user={user} church={church} onSave={refresh} />
           )}
         </main>
       </div>
@@ -145,8 +135,19 @@ function App() {
       {telaoOpen && (
         <Telao
           visitors={visitors}
+          congresses={congresses}
           church={church}
           onClose={() => setTelaoOpen(false)}
+        />
+      )}
+
+      {directorOpen && (
+        <DirectorMode
+          visitors={visitors}
+          congresses={congresses}
+          church={church}
+          churchId={user.uid}
+          onClose={() => setDirectorOpen(false)}
         />
       )}
     </>
